@@ -1,0 +1,132 @@
+{"frames": [
+
+{
+	"filename": "enemy-boss-riddler-cube-1.png",
+	"frame": {"x":44,"y":2,"w":18,"h":21},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":21},
+	"sourceSize": {"w":18,"h":21}
+},
+{
+	"filename": "enemy-boss-riddler-cube-2.png",
+	"frame": {"x":21,"y":21,"w":17,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":17,"h":16},
+	"sourceSize": {"w":17,"h":16}
+},
+{
+	"filename": "enemy-boss-riddler-cube-3.png",
+	"frame": {"x":34,"y":57,"w":13,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":13},
+	"sourceSize": {"w":13,"h":13}
+},
+{
+	"filename": "enemy-boss-riddler-cube-4.png",
+	"frame": {"x":18,"y":56,"w":14,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":13},
+	"sourceSize": {"w":14,"h":13}
+},
+{
+	"filename": "enemy-boss-riddler-cube-5.png",
+	"frame": {"x":23,"y":2,"w":19,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":17},
+	"sourceSize": {"w":19,"h":17}
+},
+{
+	"filename": "enemy-boss-riddler-cube-6.png",
+	"frame": {"x":2,"y":74,"w":11,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":13},
+	"sourceSize": {"w":11,"h":13}
+},
+{
+	"filename": "enemy-boss-riddler-cube-7.png",
+	"frame": {"x":21,"y":39,"w":16,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":15},
+	"sourceSize": {"w":16,"h":15}
+},
+{
+	"filename": "enemy-boss-riddler-cube-8.png",
+	"frame": {"x":2,"y":57,"w":13,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":15},
+	"sourceSize": {"w":13,"h":15}
+},
+{
+	"filename": "enemy-boss-riddler-cube-9.png",
+	"frame": {"x":49,"y":57,"w":13,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":13},
+	"sourceSize": {"w":13,"h":13}
+},
+{
+	"filename": "enemy-boss-riddler-cube-10.png",
+	"frame": {"x":39,"y":42,"w":14,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":13},
+	"sourceSize": {"w":14,"h":13}
+},
+{
+	"filename": "enemy-boss-riddler-cube-11.png",
+	"frame": {"x":2,"y":2,"w":19,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":17},
+	"sourceSize": {"w":19,"h":17}
+},
+{
+	"filename": "enemy-boss-riddler-cube-12.png",
+	"frame": {"x":2,"y":40,"w":14,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":15},
+	"sourceSize": {"w":14,"h":15}
+},
+{
+	"filename": "enemy-boss-riddler-cube-13.png",
+	"frame": {"x":17,"y":71,"w":11,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":13},
+	"sourceSize": {"w":11,"h":13}
+},
+{
+	"filename": "enemy-boss-riddler-cube-14.png",
+	"frame": {"x":2,"y":21,"w":17,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":17,"h":17},
+	"sourceSize": {"w":17,"h":17}
+},
+{
+	"filename": "enemy-boss-riddler-cube-15.png",
+	"frame": {"x":40,"y":25,"w":16,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":15},
+	"sourceSize": {"w":16,"h":15}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "riddler-cube.png",
+	"format": "RGBA8888",
+	"size": {"w":64,"h":128},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:00c2e55983294200902846a176d4c44c:75c0b214248084e4e893051abfb323c6:93e449828a8dd27267dc89ab7872a731$"
+}
+}

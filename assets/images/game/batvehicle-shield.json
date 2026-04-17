@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "lbm-batvehicle-shield-1.png",
+	"frame": {"x":1,"y":1,"w":95,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":95,"h":170},
+	"sourceSize": {"w":95,"h":170}
+},
+{
+	"filename": "lbm-batvehicle-shield-2.png",
+	"frame": {"x":1,"y":173,"w":95,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":95,"h":170},
+	"sourceSize": {"w":95,"h":170}
+},
+{
+	"filename": "lbm-batvehicle-shield-3.png",
+	"frame": {"x":1,"y":345,"w":95,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":95,"h":170},
+	"sourceSize": {"w":95,"h":170}
+},
+{
+	"filename": "lbm-batvehicle-shield-4.png",
+	"frame": {"x":1,"y":517,"w":95,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":95,"h":170},
+	"sourceSize": {"w":95,"h":170}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "batvehicle-shield.png/batvehicle-shield.png",
+	"format": "RGBA8888",
+	"size": {"w":97,"h":688},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:24419dd6779b76facc455c27e7d8c55b:faa1950f3e1f6c80d092e6e67c6b4b55:4ac292025ec71019b8b8a905798405c7$"
+}
+}

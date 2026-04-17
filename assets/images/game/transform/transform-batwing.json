@@ -1,0 +1,36 @@
+{"frames": [
+
+{
+	"filename": "lbm-batwing01.png",
+	"frame": {"x":333,"y":2,"w":353,"h":339},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":10,"w":353,"h":339},
+	"sourceSize": {"w":357,"h":414}
+},
+{
+	"filename": "lbm-batwing02.png",
+	"frame": {"x":2,"y":376,"w":352,"h":348},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":0,"w":352,"h":348},
+	"sourceSize": {"w":357,"h":414}
+},
+{
+	"filename": "lbm-batwing03.png",
+	"frame": {"x":2,"y":2,"w":329,"h":372},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":28,"y":42,"w":329,"h":372},
+	"sourceSize": {"w":357,"h":414}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "transform-batwing.png",
+	"format": "RGBA8888",
+	"size": {"w":1024,"h":1024},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:4dbc9512c7215d64282ea31a50dc9865:ed721bf03aefa0f27317f1eac2776814:6f60bf3303af48d599fbd81f2f22dcc6$"
+}
+}

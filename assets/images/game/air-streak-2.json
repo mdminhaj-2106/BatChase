@@ -1,0 +1,68 @@
+{"frames": [
+
+{
+	"filename": "air-streak2-01.png",
+	"frame": {"x":2,"y":267,"w":89,"h":100},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":0,"w":89,"h":100},
+	"sourceSize": {"w":105,"h":261}
+},
+{
+	"filename": "air-streak2-02.png",
+	"frame": {"x":2,"y":163,"w":99,"h":102},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":0,"w":99,"h":102},
+	"sourceSize": {"w":105,"h":261}
+},
+{
+	"filename": "air-streak2-03.png",
+	"frame": {"x":109,"y":2,"w":102,"h":150},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":5,"w":102,"h":150},
+	"sourceSize": {"w":105,"h":261}
+},
+{
+	"filename": "air-streak2-04.png",
+	"frame": {"x":2,"y":2,"w":105,"h":159},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":28,"w":105,"h":159},
+	"sourceSize": {"w":105,"h":261}
+},
+{
+	"filename": "air-streak2-05.png",
+	"frame": {"x":109,"y":154,"w":99,"h":127},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":85,"w":99,"h":127},
+	"sourceSize": {"w":105,"h":261}
+},
+{
+	"filename": "air-streak2-06.png",
+	"frame": {"x":2,"y":369,"w":75,"h":120},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":16,"y":127,"w":75,"h":120},
+	"sourceSize": {"w":105,"h":261}
+},
+{
+	"filename": "air-streak2-07.png",
+	"frame": {"x":213,"y":2,"w":35,"h":67},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":36,"y":193,"w":35,"h":67},
+	"sourceSize": {"w":105,"h":261}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "air-streak-2.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":512},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:3b04704f7abff8a205e26d2ba1c36187:6eca7413c0a9bce8c50a3ea980f499f3:08b2046822a22307d524f3d7147538e3$"
+}
+}

@@ -1,0 +1,27 @@
+{
+    "city": {
+        "easy": ["road1", "road2_easy", "road3_easy", "road4_easy", "road11_easy", "road12_enemies_easy","road13_enemies_easy","road14_enemies_easy","road15_enemies_easy"],
+        "medium": ["road5_medium", "road6_medium", "road7_medium", "road16_enemies_medium", "road17_enemies_medium", "road18_enemies_medium"],
+        "hard": ["road8_hard", "road9_hard", "road10_hard", "road19_enemies_hard", "road20_enemies_hard", "road21_enemies_hard"]
+    },
+    "sky": {
+        "easy": ["sky1", "sky2_easy", "sky3_easy", "sky4_easy", "sky5_easy", "sky12_enemies_easy", "sky13_enemies_easy", "sky14_enemies_easy", "sky15_enemies_easy"],
+        "medium": ["sky6_medium", "sky7_medium", "sky8_medium", "sky16_enemies_medium", "sky17_enemies_medium", "sky18_enemies_medium"],
+        "hard": ["sky9_hard", "sky10_hard", "sky11_hard", "sky19_enemies_hard", "sky20_enemies_hard", "sky21_enemies_hard"]
+    },
+    "construction": {
+        "easy": ["construction1", "construction2_easy", "construction3_easy", "construction4_easy", "construction5_easy", "construction12_enemies_easy", "construction13_enemies_easy", "construction14_enemies_easy", "construction15_enemies_easy"],
+        "medium": ["construction6_medium", "construction7_medium", "construction8_medium", "construction16_enemies_medium", "construction17_enemies_medium", "construction18_enemies_medium"],
+        "hard": ["construction9_hard", "construction10_hard", "construction11_hard", "construction19_enemies_hard", "construction20_enemies_hard", "construction21_enemies_hard"]
+    },
+    "water": {
+        "easy": ["enemies1", "water2_easy", "water3_easy", "water4_easy", "water5_easy", "water12_enemies_easy", "water13_enemies_easy", "water14_enemies_easy", "water15_enemies_easy"],
+        "medium": ["water6_medium", "water7_medium", "water8_medium", "water16_enemies_medium", "water17_enemies_medium", "water18_enemies_medium"],
+        "hard": ["water9_hard", "water10_hard", "water11_hard", "water19_enemies_hard", "water20_enemies_hard", "water21_enemies_hard"]
+    },
+    "boss": {
+        "easy": ["boss1", "boss2", "boss3", "boss4", "boss5"],
+        "medium": [],
+        "hard": []
+    }
+}

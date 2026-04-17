@@ -1,0 +1,22 @@
+{
+    "city": {
+        "bgPrefix": "city",
+        "bgCount": 12,
+        "foreground": true
+    },
+    "construction": {
+        "bgPrefix": "construction",
+        "bgCount": 12,
+        "foreground": true
+    },
+    "sky": {
+        "bgPrefix": "sky",
+        "bgCount": 12,
+        "foreground": false
+    },
+    "water": {
+        "bgPrefix": "water",
+        "bgCount": 12,
+        "foreground": false
+    }
+}

@@ -1,0 +1,68 @@
+{"frames": [
+
+{
+	"filename": "hit-green-01.png",
+	"frame": {"x":212,"y":144,"w":30,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":43,"y":53,"w":30,"h":33},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-green-02.png",
+	"frame": {"x":212,"y":104,"w":40,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":38,"y":50,"w":40,"h":38},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-green-03.png",
+	"frame": {"x":137,"y":104,"w":73,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":23,"y":26,"w":73,"h":77},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-green-04.png",
+	"frame": {"x":137,"y":2,"w":112,"h":100},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":16,"w":112,"h":100},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-green-05.png",
+	"frame": {"x":2,"y":138,"w":130,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":4,"w":130,"h":124},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-green-06.png",
+	"frame": {"x":2,"y":264,"w":123,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":6,"w":123,"h":121},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-green-07.png",
+	"frame": {"x":2,"y":2,"w":133,"h":134},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":0,"w":133,"h":134},
+	"sourceSize": {"w":143,"h":134}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "hit-effect-riddler.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":512},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:eb431c575fe4db82b22a0c6ef727db60:9316b2515122800b938f1b2485b4097f:132ad25094c838689add5ec7daac5c42$"
+}
+}

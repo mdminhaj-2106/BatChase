@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "trail-flame2-01.png",
+	"frame": {"x":2,"y":162,"w":46,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":0,"w":46,"h":76},
+	"sourceSize": {"w":57,"h":79}
+},
+{
+	"filename": "trail-flame2-02.png",
+	"frame": {"x":2,"y":2,"w":57,"h":79},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":79},
+	"sourceSize": {"w":57,"h":79}
+},
+{
+	"filename": "trail-flame2-03.png",
+	"frame": {"x":2,"y":83,"w":50,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":0,"w":50,"h":77},
+	"sourceSize": {"w":57,"h":79}
+},
+{
+	"filename": "trail-flame2-04.png",
+	"frame": {"x":61,"y":2,"w":56,"h":79},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":56,"h":79},
+	"sourceSize": {"w":57,"h":79}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "rocket-trail.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:02e49cbfb7d18aee62c52ea7ea493325:f7e60beafbd1e67e1a7460396e9e199d:931d3ad8df69f9645b034122b1a87d28$"
+}
+}

@@ -1,0 +1,92 @@
+{"frames": [
+
+{
+	"filename": "lego-stud-01.png",
+	"frame": {"x":2,"y":2,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-02.png",
+	"frame": {"x":2,"y":30,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-03.png",
+	"frame": {"x":2,"y":58,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-04.png",
+	"frame": {"x":2,"y":86,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-05.png",
+	"frame": {"x":29,"y":2,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-06.png",
+	"frame": {"x":56,"y":2,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-07.png",
+	"frame": {"x":83,"y":2,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-08.png",
+	"frame": {"x":29,"y":30,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-09.png",
+	"frame": {"x":29,"y":58,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+},
+{
+	"filename": "lego-stud-10.png",
+	"frame": {"x":29,"y":86,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":26},
+	"sourceSize": {"w":25,"h":26}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "stud.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":128},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b41eb5a7b2ef8a4c9b38b6d9850ef571:c2d2b20b19dda377c520860cc88acf01:a6355b6e1a889a8f1e8329cbd73474df$"
+}
+}

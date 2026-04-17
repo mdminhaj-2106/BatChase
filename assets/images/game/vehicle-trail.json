@@ -1,0 +1,36 @@
+{"frames": [
+
+{
+	"filename": "trail-flame-01.png",
+	"frame": {"x":2,"y":76,"w":42,"h":78},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":2,"w":42,"h":78},
+	"sourceSize": {"w":45,"h":80}
+},
+{
+	"filename": "trail-flame-02.png",
+	"frame": {"x":2,"y":2,"w":45,"h":72},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":45,"h":72},
+	"sourceSize": {"w":45,"h":80}
+},
+{
+	"filename": "trail-flame-03.png",
+	"frame": {"x":2,"y":156,"w":40,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":40,"h":74},
+	"sourceSize": {"w":45,"h":80}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "vehicle-trail.png",
+	"format": "RGBA8888",
+	"size": {"w":64,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:bd55eaf6dd6d0e88a08a7302a78136da:96c90da468d8c8ac50f9dbe1a62da20f:686ceec49bd3bb4156b953e25f2f7e07$"
+}
+}

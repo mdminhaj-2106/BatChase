@@ -1,0 +1,23 @@
+body
+{
+	margin: 0;
+	padding: 0;
+	background-color: #000;
+	transform: scale(0.9999999);
+}
+
+@font-face {
+    font-family: 'gobold-bold-italic';
+    src: url('./../assets/fonts/gobold_bold_italic-webfont.woff2') format('woff2'),
+         url('./../assets/fonts/gobold_bold_italic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'roboto-medium';
+    src: url('./../assets/fonts/roboto-medium-webfont.woff2') format('woff2'),
+         url('./../assets/fonts/roboto-medium-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}

@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "drone-frozer-01.png",
+	"frame": {"x":2,"y":2,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+},
+{
+	"filename": "drone-frozer-02.png",
+	"frame": {"x":2,"y":24,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+},
+{
+	"filename": "drone-frozer-03.png",
+	"frame": {"x":24,"y":2,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+},
+{
+	"filename": "drone-frozer-04.png",
+	"frame": {"x":24,"y":24,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "drone-freeze-blades.png",
+	"format": "RGBA8888",
+	"size": {"w":64,"h":64},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:95ed5d6f82f5aa00a7d62d6d493820e6:0cf1acfff105d2c5e9507614b4439f52:eff3e58571d84683b63423ce43f69cab$"
+}
+}

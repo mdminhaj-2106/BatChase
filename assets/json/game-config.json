@@ -1,0 +1,17 @@
+{
+	"skipTutorial": false,
+
+	"upgradeCosts": [250, 500, 1000],
+
+	"startingMovementSpeed": 400,
+	"finalMovementSpeed": 600,
+	"startingBossHealth": 2,
+	"finalBossHealth": 5,
+	"bossesUntilFinalValues": 6,
+
+	"cookieLink": "https://zillakgames.com/",
+	"privacyLink": "https://zillakgames.com/",
+	"legoButtonLink": "https://zillakgames.com/",
+
+	"legoSiteBuild": true
+}

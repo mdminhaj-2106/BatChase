@@ -1,0 +1,212 @@
+{"frames": [
+
+{
+	"filename": "lbm-particle-boost-car-below-01.png",
+	"frame": {"x":0,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-02.png",
+	"frame": {"x":103,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-03.png",
+	"frame": {"x":206,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-04.png",
+	"frame": {"x":309,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-05.png",
+	"frame": {"x":412,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-06.png",
+	"frame": {"x":515,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-07.png",
+	"frame": {"x":618,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-08.png",
+	"frame": {"x":721,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-09.png",
+	"frame": {"x":824,"y":0,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-10.png",
+	"frame": {"x":0,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-11.png",
+	"frame": {"x":103,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-12.png",
+	"frame": {"x":206,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-13.png",
+	"frame": {"x":309,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-14.png",
+	"frame": {"x":412,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-15.png",
+	"frame": {"x":515,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-16.png",
+	"frame": {"x":618,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-17.png",
+	"frame": {"x":721,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-18.png",
+	"frame": {"x":824,"y":217,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-19.png",
+	"frame": {"x":0,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-20.png",
+	"frame": {"x":103,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-21.png",
+	"frame": {"x":206,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-22.png",
+	"frame": {"x":309,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-23.png",
+	"frame": {"x":412,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-24.png",
+	"frame": {"x":515,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+},
+{
+	"filename": "lbm-particle-boost-car-below-25.png",
+	"frame": {"x":618,"y":434,"w":103,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":217},
+	"sourceSize": {"w":103,"h":217}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "boost-car-below.png",
+	"format": "RGBA8888",
+	"size": {"w":927,"h":651},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a1cf9280dfb38c914f6af310ac06e736:8953ea74fedecd9f886e9604a1107ac2:0320f6fe7b216ae7939964e41072eb5b$"
+}
+}

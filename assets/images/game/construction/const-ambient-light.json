@@ -1,0 +1,132 @@
+{"frames": [
+
+{
+	"filename": "lbm-constru-light-ambient-01.png",
+	"frame": {"x":0,"y":0,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-02.png",
+	"frame": {"x":39,"y":0,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-03.png",
+	"frame": {"x":78,"y":0,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-04.png",
+	"frame": {"x":0,"y":39,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-05.png",
+	"frame": {"x":39,"y":39,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-06.png",
+	"frame": {"x":78,"y":39,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-07.png",
+	"frame": {"x":0,"y":78,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-08.png",
+	"frame": {"x":39,"y":78,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-09.png",
+	"frame": {"x":78,"y":78,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-10.png",
+	"frame": {"x":0,"y":117,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-11.png",
+	"frame": {"x":39,"y":117,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-12.png",
+	"frame": {"x":78,"y":117,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-13.png",
+	"frame": {"x":0,"y":156,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-14.png",
+	"frame": {"x":39,"y":156,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+},
+{
+	"filename": "lbm-constru-light-ambient-15.png",
+	"frame": {"x":78,"y":156,"w":39,"h":39},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":39},
+	"sourceSize": {"w":39,"h":39}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "const-ambient-light.png",
+	"format": "RGBA8888",
+	"size": {"w":117,"h":195},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:770dcb809653e26291ee1e12cb3a40b1:d5f73c45259195af7a1de1b8c18fe6b6:4ef4cf7b193422352f4034d6017c394c$"
+}
+}

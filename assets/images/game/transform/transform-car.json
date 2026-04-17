@@ -1,0 +1,36 @@
+{"frames": [
+
+{
+	"filename": "lbm-car01.png",
+	"frame": {"x":2,"y":696,"w":177,"h":325},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":177,"h":325},
+	"sourceSize": {"w":177,"h":325}
+},
+{
+	"filename": "lbm-car02.png",
+	"frame": {"x":2,"y":361,"w":177,"h":333},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":177,"h":333},
+	"sourceSize": {"w":177,"h":333}
+},
+{
+	"filename": "lbm-car03.png",
+	"frame": {"x":2,"y":2,"w":177,"h":357},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":177,"h":357},
+	"sourceSize": {"w":177,"h":357}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "transform-car.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":1024},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:cf227b7aece73fdb23ca9f06d73e176b:69e46f145a1754f4598fbdfc2bbb2326:629ea5b2b1271ce2c4901cd3df65bdc0$"
+}
+}

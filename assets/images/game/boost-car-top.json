@@ -1,0 +1,212 @@
+{"frames": [
+
+{
+	"filename": "lbm-particle-boost-car-top-01.png",
+	"frame": {"x":0,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-02.png",
+	"frame": {"x":103,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-03.png",
+	"frame": {"x":206,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-04.png",
+	"frame": {"x":309,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-05.png",
+	"frame": {"x":412,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-06.png",
+	"frame": {"x":515,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-07.png",
+	"frame": {"x":618,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-08.png",
+	"frame": {"x":721,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-09.png",
+	"frame": {"x":824,"y":0,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-10.png",
+	"frame": {"x":0,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-11.png",
+	"frame": {"x":103,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-12.png",
+	"frame": {"x":206,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-13.png",
+	"frame": {"x":309,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-14.png",
+	"frame": {"x":412,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-15.png",
+	"frame": {"x":515,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-16.png",
+	"frame": {"x":618,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-17.png",
+	"frame": {"x":721,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-18.png",
+	"frame": {"x":824,"y":374,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-19.png",
+	"frame": {"x":0,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-20.png",
+	"frame": {"x":103,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-21.png",
+	"frame": {"x":206,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-22.png",
+	"frame": {"x":309,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-23.png",
+	"frame": {"x":412,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-24.png",
+	"frame": {"x":515,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+},
+{
+	"filename": "lbm-particle-boost-car-top-25.png",
+	"frame": {"x":618,"y":748,"w":103,"h":374},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":374},
+	"sourceSize": {"w":103,"h":374}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "boost-car-top.png",
+	"format": "RGBA8888",
+	"size": {"w":927,"h":1122},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:716ba81949e8a4d805edd98f88c87c07:b127923586732018ff53c5ff534491b8:7335c4ba30821d00539cbf763e151838$"
+}
+}

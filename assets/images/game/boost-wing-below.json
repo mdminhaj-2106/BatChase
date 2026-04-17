@@ -1,0 +1,212 @@
+{"frames": [
+
+{
+	"filename": "lbm-particle-boost-wing-below-01.png",
+	"frame": {"x":0,"y":0,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-02.png",
+	"frame": {"x":182,"y":0,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-03.png",
+	"frame": {"x":364,"y":0,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-04.png",
+	"frame": {"x":546,"y":0,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-05.png",
+	"frame": {"x":728,"y":0,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-06.png",
+	"frame": {"x":0,"y":188,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-07.png",
+	"frame": {"x":182,"y":188,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-08.png",
+	"frame": {"x":364,"y":188,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-09.png",
+	"frame": {"x":546,"y":188,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-10.png",
+	"frame": {"x":728,"y":188,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-11.png",
+	"frame": {"x":0,"y":376,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-12.png",
+	"frame": {"x":182,"y":376,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-13.png",
+	"frame": {"x":364,"y":376,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-14.png",
+	"frame": {"x":546,"y":376,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-15.png",
+	"frame": {"x":728,"y":376,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-16.png",
+	"frame": {"x":0,"y":564,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-17.png",
+	"frame": {"x":182,"y":564,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-18.png",
+	"frame": {"x":364,"y":564,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-19.png",
+	"frame": {"x":546,"y":564,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-20.png",
+	"frame": {"x":728,"y":564,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-21.png",
+	"frame": {"x":0,"y":752,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-22.png",
+	"frame": {"x":182,"y":752,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-23.png",
+	"frame": {"x":364,"y":752,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-24.png",
+	"frame": {"x":546,"y":752,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+},
+{
+	"filename": "lbm-particle-boost-wing-below-25.png",
+	"frame": {"x":728,"y":752,"w":182,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":188},
+	"sourceSize": {"w":182,"h":188}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "boost-wing-below.png",
+	"format": "RGBA8888",
+	"size": {"w":910,"h":940},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:7943392af2b6897fd5a565e163bf4257:0e77986e95a6a81804ea2899434ddd33:59ea1051bf1ce4d88457855dd1fc5149$"
+}
+}

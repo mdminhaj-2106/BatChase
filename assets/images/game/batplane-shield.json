@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "lbm-batplane-shield-1.png",
+	"frame": {"x":1,"y":1,"w":146,"h":157},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":146,"h":157},
+	"sourceSize": {"w":146,"h":158}
+},
+{
+	"filename": "lbm-batplane-shield-2.png",
+	"frame": {"x":149,"y":1,"w":146,"h":157},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":146,"h":157},
+	"sourceSize": {"w":146,"h":158}
+},
+{
+	"filename": "lbm-batplane-shield-3.png",
+	"frame": {"x":297,"y":1,"w":146,"h":157},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":146,"h":157},
+	"sourceSize": {"w":146,"h":158}
+},
+{
+	"filename": "lbm-batplane-shield-4.png",
+	"frame": {"x":445,"y":1,"w":146,"h":157},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":146,"h":157},
+	"sourceSize": {"w":146,"h":158}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "batplane-shield/batplane-shield.png",
+	"format": "RGBA8888",
+	"size": {"w":592,"h":159},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:52d4d29f4d69769c4278efdf279d8049:d5339183bbefb36afa3a6fff39a4c9c6:201a3076e1fd2c6686da6a59742d90ac$"
+}
+}

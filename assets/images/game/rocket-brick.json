@@ -1,0 +1,260 @@
+{"frames": [
+
+{
+	"filename": "block-rocket-01.png",
+	"frame": {"x":183,"y":473,"w":88,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":0,"w":88,"h":93},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-02.png",
+	"frame": {"x":281,"y":464,"w":90,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":90,"h":93},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-03.png",
+	"frame": {"x":284,"y":370,"w":91,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":91,"h":92},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-04.png",
+	"frame": {"x":97,"y":187,"w":93,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":93,"h":92},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-05.png",
+	"frame": {"x":290,"y":2,"w":94,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":90},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-06.png",
+	"frame": {"x":2,"y":96,"w":94,"h":89},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":89},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-07.png",
+	"frame": {"x":386,"y":186,"w":94,"h":88},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":94,"h":88},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-08.png",
+	"frame": {"x":98,"y":96,"w":94,"h":89},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":89},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-09.png",
+	"frame": {"x":386,"y":2,"w":94,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":90},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-10.png",
+	"frame": {"x":2,"y":2,"w":94,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":94,"h":92},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-11.png",
+	"frame": {"x":192,"y":187,"w":93,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":93,"h":92},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-12.png",
+	"frame": {"x":97,"y":281,"w":92,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":92,"h":93},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-13.png",
+	"frame": {"x":191,"y":281,"w":91,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":91,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-14.png",
+	"frame": {"x":189,"y":377,"w":90,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":90,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-15.png",
+	"frame": {"x":373,"y":558,"w":89,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":89,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-16.png",
+	"frame": {"x":93,"y":472,"w":88,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":0,"w":88,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-17.png",
+	"frame": {"x":2,"y":472,"w":89,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":89,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-18.png",
+	"frame": {"x":377,"y":462,"w":90,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":90,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-19.png",
+	"frame": {"x":2,"y":377,"w":91,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":91,"h":93},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-20.png",
+	"frame": {"x":2,"y":282,"w":92,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":92,"h":93},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-21.png",
+	"frame": {"x":287,"y":277,"w":93,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":93,"h":91},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-22.png",
+	"frame": {"x":290,"y":94,"w":94,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":90},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-23.png",
+	"frame": {"x":290,"y":186,"w":94,"h":89},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":89},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-24.png",
+	"frame": {"x":386,"y":276,"w":94,"h":88},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":94,"h":88},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-25.png",
+	"frame": {"x":194,"y":95,"w":94,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":90},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-26.png",
+	"frame": {"x":386,"y":94,"w":94,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":94,"h":90},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-27.png",
+	"frame": {"x":194,"y":2,"w":94,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":94,"h":91},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-28.png",
+	"frame": {"x":98,"y":2,"w":94,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":94,"h":92},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-29.png",
+	"frame": {"x":2,"y":187,"w":93,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":93,"h":93},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-30.png",
+	"frame": {"x":382,"y":366,"w":92,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":92,"h":94},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-rocket-31.png",
+	"frame": {"x":96,"y":376,"w":91,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":91,"h":94},
+	"sourceSize": {"w":94,"h":94}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "rocket-brick.png",
+	"format": "RGBA8888",
+	"size": {"w":512,"h":1024},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e9224d6a583a8eb71146057b7d46b025:dd6031b4494d1a5c5dfc70560146d617:6313dbbc1f17dbcd0a87cb3dd69e877b$"
+}
+}

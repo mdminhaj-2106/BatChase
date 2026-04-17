@@ -1,0 +1,100 @@
+{"frames": [
+
+{
+	"filename": "smoke-v1-01.png",
+	"frame": {"x":0,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-02.png",
+	"frame": {"x":136,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-03.png",
+	"frame": {"x":272,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-04.png",
+	"frame": {"x":408,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-05.png",
+	"frame": {"x":544,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-06.png",
+	"frame": {"x":680,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-07.png",
+	"frame": {"x":816,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-08.png",
+	"frame": {"x":952,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-09.png",
+	"frame": {"x":1088,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-10.png",
+	"frame": {"x":1224,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+},
+{
+	"filename": "smoke-v1-11.png",
+	"frame": {"x":1360,"y":0,"w":136,"h":125},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":125},
+	"sourceSize": {"w":136,"h":125}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "smoke-v1.png",
+	"format": "RGBA8888",
+	"size": {"w":1496,"h":125},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:4d57be1f8581334006b7f5cc24a00f52:18e67d19042dc906703b2bf687e26898:306d180b9fbf56ad884a515045c6cbb3$"
+}
+}

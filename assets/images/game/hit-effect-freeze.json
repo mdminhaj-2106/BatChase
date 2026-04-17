@@ -1,0 +1,68 @@
+{"frames": [
+
+{
+	"filename": "hit-blue-01.png",
+	"frame": {"x":212,"y":144,"w":30,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":43,"y":53,"w":30,"h":33},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-blue-02.png",
+	"frame": {"x":212,"y":104,"w":40,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":38,"y":50,"w":40,"h":38},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-blue-03.png",
+	"frame": {"x":137,"y":104,"w":73,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":23,"y":26,"w":73,"h":77},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-blue-04.png",
+	"frame": {"x":137,"y":2,"w":112,"h":100},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":16,"w":112,"h":100},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-blue-05.png",
+	"frame": {"x":2,"y":138,"w":130,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":4,"w":130,"h":124},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-blue-06.png",
+	"frame": {"x":2,"y":264,"w":123,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":6,"w":123,"h":121},
+	"sourceSize": {"w":143,"h":134}
+},
+{
+	"filename": "hit-blue-07.png",
+	"frame": {"x":2,"y":2,"w":133,"h":134},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":0,"w":133,"h":134},
+	"sourceSize": {"w":143,"h":134}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "hit-effect-freeze.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":512},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:3987a944d345bc9053194307e759f72d:5c533c623f8793261a13bbe3c7cb62e6:441d84710ff832ad7326d4109791fc7d$"
+}
+}

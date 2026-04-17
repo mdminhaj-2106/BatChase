@@ -1,0 +1,132 @@
+{"frames": [
+
+{
+	"filename": "lbm-animation-gold-collect-01.png",
+	"frame": {"x":98,"y":2,"w":25,"h":26},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":10,"w":25,"h":26},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-02.png",
+	"frame": {"x":95,"y":90,"w":30,"h":30},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":8,"w":30,"h":30},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-03.png",
+	"frame": {"x":93,"y":122,"w":33,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":6,"w":33,"h":33},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-04.png",
+	"frame": {"x":81,"y":157,"w":35,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":35,"h":37},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-05.png",
+	"frame": {"x":42,"y":138,"w":37,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":4,"w":37,"h":37},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-06.png",
+	"frame": {"x":2,"y":98,"w":38,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":3,"w":38,"h":39},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-07.png",
+	"frame": {"x":50,"y":50,"w":43,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":43,"h":42},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-08.png",
+	"frame": {"x":2,"y":2,"w":46,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":46},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-09.png",
+	"frame": {"x":50,"y":2,"w":46,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":46},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-10.png",
+	"frame": {"x":2,"y":50,"w":46,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":46},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-11.png",
+	"frame": {"x":50,"y":94,"w":41,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":2,"w":41,"h":42},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-12.png",
+	"frame": {"x":2,"y":139,"w":37,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":5,"w":37,"h":37},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-13.png",
+	"frame": {"x":95,"y":57,"w":31,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":8,"w":31,"h":31},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-14.png",
+	"frame": {"x":98,"y":30,"w":25,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":11,"w":25,"h":25},
+	"sourceSize": {"w":46,"h":46}
+},
+{
+	"filename": "lbm-animation-gold-collect-15.png",
+	"frame": {"x":41,"y":177,"w":19,"h":18},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":14,"w":19,"h":18},
+	"sourceSize": {"w":46,"h":46}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "stud-collect.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:82f1ed1d5a3d7efaa3b2cc8d73ef19d7:287e87104ed6ba8a40d14cd17819348c:4943f5727e3bd51716df866e266f4cfd$"
+}
+}

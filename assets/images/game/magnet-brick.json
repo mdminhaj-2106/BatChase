@@ -1,0 +1,260 @@
+{"frames": [
+
+{
+	"filename": "block-magnet-01.png",
+	"frame": {"x":156,"y":2,"w":72,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":8,"w":72,"h":77},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-02.png",
+	"frame": {"x":155,"y":82,"w":74,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":8,"w":74,"h":77},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-03.png",
+	"frame": {"x":81,"y":404,"w":75,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":9,"w":75,"h":76},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-04.png",
+	"frame": {"x":156,"y":243,"w":77,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":9,"w":77,"h":76},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-05.png",
+	"frame": {"x":158,"y":398,"w":78,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":10,"w":78,"h":74},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-06.png",
+	"frame": {"x":239,"y":316,"w":79,"h":73},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":10,"w":79,"h":73},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-07.png",
+	"frame": {"x":395,"y":305,"w":79,"h":72},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":11,"w":79,"h":72},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-08.png",
+	"frame": {"x":314,"y":234,"w":79,"h":73},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":10,"w":79,"h":73},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-09.png",
+	"frame": {"x":310,"y":2,"w":79,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":10,"w":79,"h":74},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-10.png",
+	"frame": {"x":230,"y":2,"w":78,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":9,"w":78,"h":76},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-11.png",
+	"frame": {"x":228,"y":161,"w":77,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":9,"w":77,"h":76},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-12.png",
+	"frame": {"x":78,"y":247,"w":76,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":8,"w":76,"h":77},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-13.png",
+	"frame": {"x":79,"y":2,"w":75,"h":78},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":8,"w":75,"h":78},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-14.png",
+	"frame": {"x":2,"y":248,"w":74,"h":79},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":7,"w":74,"h":79},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-15.png",
+	"frame": {"x":2,"y":84,"w":73,"h":80},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":7,"w":73,"h":80},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-16.png",
+	"frame": {"x":2,"y":166,"w":72,"h":80},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":7,"w":72,"h":80},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-17.png",
+	"frame": {"x":76,"y":166,"w":73,"h":79},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":7,"w":73,"h":79},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-18.png",
+	"frame": {"x":2,"y":329,"w":74,"h":78},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":8,"w":74,"h":78},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-19.png",
+	"frame": {"x":151,"y":164,"w":75,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":8,"w":75,"h":77},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-20.png",
+	"frame": {"x":231,"y":80,"w":76,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":9,"w":76,"h":76},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-21.png",
+	"frame": {"x":235,"y":239,"w":77,"h":75},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":9,"w":77,"h":75},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-22.png",
+	"frame": {"x":238,"y":398,"w":78,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":10,"w":78,"h":74},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-23.png",
+	"frame": {"x":389,"y":156,"w":79,"h":73},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":10,"w":79,"h":73},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-24.png",
+	"frame": {"x":395,"y":231,"w":80,"h":72},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":11,"w":80,"h":72},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-25.png",
+	"frame": {"x":307,"y":158,"w":80,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":10,"w":80,"h":74},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-26.png",
+	"frame": {"x":309,"y":80,"w":80,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":10,"w":80,"h":74},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-27.png",
+	"frame": {"x":158,"y":321,"w":79,"h":75},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":9,"w":79,"h":75},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-28.png",
+	"frame": {"x":78,"y":326,"w":78,"h":76},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":9,"w":78,"h":76},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-29.png",
+	"frame": {"x":2,"y":409,"w":77,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":8,"w":77,"h":77},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-30.png",
+	"frame": {"x":77,"y":84,"w":76,"h":78},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":8,"w":76,"h":78},
+	"sourceSize": {"w":94,"h":94}
+},
+{
+	"filename": "block-magnet-31.png",
+	"frame": {"x":2,"y":2,"w":75,"h":80},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":7,"w":75,"h":80},
+	"sourceSize": {"w":94,"h":94}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "magnet-brick.png",
+	"format": "RGBA8888",
+	"size": {"w":512,"h":512},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:4fc91e22353df70aa9e84beb4c0220a5:eb8b63094fd60117aa0a9f507ac21a50:8c50162aba75da98c80cd709b4b46d24$"
+}
+}

@@ -1,0 +1,108 @@
+{"frames": [
+
+{
+	"filename": "lmb-particle-powerup-pickup-01.png",
+	"frame": {"x":220,"y":181,"w":67,"h":67},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":12,"w":67,"h":67},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-02.png",
+	"frame": {"x":220,"y":108,"w":71,"h":71},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":10,"w":71,"h":71},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-03.png",
+	"frame": {"x":220,"y":1,"w":71,"h":105},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":105},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-04.png",
+	"frame": {"x":147,"y":130,"w":71,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":110},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-05.png",
+	"frame": {"x":74,"y":130,"w":71,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":118},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-06.png",
+	"frame": {"x":1,"y":130,"w":71,"h":125},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":125},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-07.png",
+	"frame": {"x":1,"y":1,"w":71,"h":127},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":127},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-08.png",
+	"frame": {"x":74,"y":1,"w":71,"h":127},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":127},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-09.png",
+	"frame": {"x":147,"y":1,"w":71,"h":127},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":71,"h":127},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-10.png",
+	"frame": {"x":289,"y":181,"w":37,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":26,"y":111,"w":37,"h":24},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-11.png",
+	"frame": {"x":289,"y":207,"w":20,"h":18},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":43,"y":117,"w":20,"h":18},
+	"sourceSize": {"w":71,"h":135}
+},
+{
+	"filename": "lmb-particle-powerup-pickup-12.png",
+	"frame": {"x":147,"y":242,"w":20,"h":9},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":43,"y":126,"w":20,"h":9},
+	"sourceSize": {"w":71,"h":135}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "power-up-collection.png/power-up-collection.png",
+	"format": "RGBA8888",
+	"size": {"w":327,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:ae98780b76aa73da219ff4769bb6cad9:3c9e61f3ee679ca81b965e5a1a5b2923:3e01ab140c7866acdbe90968a965c376$"
+}
+}

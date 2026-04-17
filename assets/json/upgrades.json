@@ -1,0 +1,7 @@
+{
+    "health": [2, 3, 4, 5],
+    "stud": [1, 1.5, 2, 3],
+    "magnet": [5, 4, 3, 2],
+    "rocketBooster": [5, 4, 3, 2],
+    "homingRocket": [5, 4, 3, 2]
+}
