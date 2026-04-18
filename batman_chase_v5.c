@@ -1,1172 +1,694 @@
 /*
  * batman_chase_v5.c — Batman: Gotham Chase
- * Pseudo-3D retro racer for DE1-SoC / CPUlator
+ * DE1-SoC / CPUlator pseudo-3D racer
  *
- * ARCHITECTURE
- *   Software framebuffer fb[] → single blit per frame → zero flicker
- *   Segment-based road with per-scanline perspective projection
- *   Fixed-point physics (FP=1024) for smooth accel/steer/drag
- *   4-lane system with hard boundary clamping
- *   True sprite stacking: player=8 layers, enemies=5 layers
- *   Z-sorted far-to-near enemy rendering
- *   4-layer parallax Gotham skyline
- *   Rain particles, street lamps, Bat-Signal, manhole details
+ * KEY FIX: Car moves on screen. Road stays centered.
+ *   - Road center = SCX + curve offset (no player shift)
+ *   - Car drawn at SCX + playerX * road_hw / FP
+ *   - Enemies drawn relative to road center
+ *   - Z-sorted far-to-near (no flicker)
+ *   - Road stripe scroll tied to speed
+ *   - Software FB + single blit = zero flicker
  *
- * CONTROLS
- *   W / ↑       accelerate
- *   S / ↓       brake / reverse
- *   A / ←       steer left
- *   D / →       steer right
- *   L-SHIFT     boost
- *   ENTER       start / confirm
- *   ESC         pause / resume
+ * W/Up=accel S/Down=brake A/Left=steer left D/Right=steer right
+ * SHIFT=boost ENTER=start ESC=pause
  */
-
 #include <stdbool.h>
 
-/* ================================================================
- * Hardware
- * ================================================================ */
-#define PIX_CTRL  0xFF203020u
-#define PIX_BUF   0xC8000000u
-#define PS2_ADDR  0xFF200100u
-#define TMR_ADDR  0xFF202000u
+/* Hardware */
+#define PIXCTRL 0xFF203020u
+#define PIXBUF  0xC8000000u
+#define PS2ADR  0xFF200100u
+#define TMRADR  0xFF202000u
 
-/* ================================================================
- * Display
- * ================================================================ */
-#define W         320
-#define H         240
-#define STRIDE    512
-#define CX        (W/2)
+/* Display */
+#define SW  320
+#define SH  240
+#define STR 512
+#define SCX (SW/2)
 
-/* ================================================================
- * Fixed-point
- * ================================================================ */
-#define FP        1024
-#define FP_SH     10
-#define TOFP(x)   ((x)<<FP_SH)
-#define FRFP(x)   ((x)>>FP_SH)
+/* Projection — proven from v3/v4 */
+#define HOR   76
+#define PROJ  512
+#define RHW   400
 
-/* ================================================================
- * Camera / projection
- * ================================================================ */
-#define HOR_Y     62
-#define CAM_H     860
-#define CAM_D     168
-#define PK        (CAM_H*CAM_D)    /* 144480 */
+/* Player — FP=256, playerX range -256..+256 = -1.0..+1.0 */
+#define FP   256
+#define MXVL 128
+#define BSVL 192
+#define ACCL 4
+#define BRKF 10
+#define FRIC 1
+#define STRF 8
+#define MXST 28
+#define BSDR 150
 
-/* ================================================================
- * Road
- * ================================================================ */
-#define NSEG      320
-#define SEGLEN    220
-#define TRACKLEN  (NSEG*SEGLEN)    /* 70400 */
-#define NLANES    4
-#define EDGE_M    150
+/* Gameplay */
+#define NEMAX  12
+#define SPWNZ  260
+#define SPWNT  70
+#define COLLZ  8
+#define COLLX  55
+#define PLHP   5
+#define INVT   90
 
-/* ================================================================
- * Gameplay
- * ================================================================ */
-#define NEMAX     18
-#define SPAWN_LO  16
-#define SPAWN_HI  44
-#define ESPAWN_Z  TOFP(6600)
-#define EDESPAWN  TOFP(-320)
-#define COLL_ZW   TOFP(240)
-#define COLL_XW   220
+/* Colours */
+#define C_K    0x0000u
+#define C_W    0xFFFFu
+#define C_R    0xF800u
+#define C_O    0xFD20u
+#define C_Y    0xFFE0u
+#define C_C    0x07FFu
+#define C_B    0x001Fu
+#define C_G    0x07E0u
+#define C_M    0xF81Fu
+#define C_DK   0x4208u
+#define C_MG   0x8410u
+#define C_LG   0xCE59u
+#define C_HOR  0x18A8u
+#define C_GRF  0x0160u
+#define C_GRN  0x0280u
+#define C_RMA  0xF800u
+#define C_RMB  0xFFFFu
+#define C_SWK  0x4A09u
+#define C_BD1  0x0841u
+#define C_BD3  0x294Au
+#define C_BD4  0x3186u
+#define C_NP   0xF81Fu
+#define C_NT   0x07EFu
+#define C_BB0  0x0841u
+#define C_BB1  0x1082u
+#define C_BB2  0x18C3u
+#define C_BCK  0x0019u
+#define C_BED  0x294Au
+#define C_BAC  0xFFE0u
+#define C_SHA  0x0841u
 
-/* ================================================================
- * Physics
- * ================================================================ */
-#define MAXSPD    TOFP(28)
-#define MAXREV    TOFP(10)
-#define ACC_FP    390
-#define BRK_FP    620
-#define RVACC     260
-#define DRAG      150
-#define BSTSPD    TOFP(39)
-#define BSTACC    700
-#define BSTDUR    110
-#define SACC      270
-#define SDAMP_N   12
-#define SDAMP_D   16
-#define SMAX      TOFP(8)
-
-/* ================================================================
- * Render
- * ================================================================ */
-#define PLR_SY    206
-#define PLR_BW    66
-#define PLR_BH    56
-#define EN_BW     54
-#define EN_BH     46
-
-/* ================================================================
- * Colours (RGB565)
- * ================================================================ */
-/* General */
-#define K         0x0000u
-#define Wh        0xFFFFu
-#define Re        0xF800u
-#define Or        0xFD20u
-#define Ye        0xFFE0u
-#define Cy        0x07FFu
-#define Bl        0x001Fu
-#define Gr        0x07E0u
-#define Mg        0xF81Fu
-#define DG        0x4208u
-#define MG        0x8410u
-#define LG        0xCE59u
-
-/* Themed */
-#define SKY_T     0x0002u
-#define SKY_M     0x0826u
-#define HOR_G     0x18A8u
-#define RD_F      0x2124u
-#define RD_N      0x31A6u
-#define GR_F      0x01C0u
-#define GR_N      0x02A0u
-#define RUM_A     0xF800u
-#define RUM_B     0xFFFFu
-#define LANE_C    0xEF5Du
-#define SW_C      0x4A09u
-#define BLD_1     0x0841u
-#define BLD_2     0x18C3u
-#define BLD_3     0x294Au
-#define BLD_4     0x3186u
-#define NEON_P    0xF81Fu
-#define NEON_T    0x07EFu
-#define RAIN_C    0x4C99u
-#define SHAD_C    0x0841u
-
-/* Batmobile */
-#define BB0       0x0841u   /* charcoal body      */
-#define BB1       0x1082u   /* mid body           */
-#define BB2       0x18C3u   /* upper body         */
-#define BB3       0x2104u   /* roof highlight     */
-#define BCK       0x0019u   /* cockpit blue       */
-#define BED       0x294Au   /* edge/fin highlight */
-#define BAC       0xFFE0u   /* yellow accent      */
-
-/* Enemies */
-#define EN0       0xF980u   /* orange car         */
-#define EN1       0x07FFu   /* cyan car           */
-#define EN2       0xF81Fu   /* magenta car        */
-#define EN3       0x7BEFu   /* grey car           */
-
-/* ================================================================
- * Types
- * ================================================================ */
-typedef struct { int curve, width, rumble; } Seg;
-
-typedef struct {
-    int x_fp, steer_fp, spd_fp;
-    int boost_t, hp, score, invuln;
-    bool alive;
-} Plr;
-
-typedef struct {
-    bool active;
-    int lane, loff, z_fp, spd_fp, type;
-} Enm;
-
-typedef enum { ST_MENU, ST_PLAY, ST_PAUSE, ST_OVER } Gst;
-
-typedef struct {
-    Gst st;
-    int fr, cam_z, lap, spawn_cd;
-    bool flash;
-} Gam;
-
-/* ================================================================
- * Globals
- * ================================================================ */
-static volatile unsigned int * const ps2 = (volatile unsigned int *)PS2_ADDR;
-static volatile unsigned int * const tmr = (volatile unsigned int *)TMR_ADDR;
-static volatile unsigned int * const pbc = (volatile unsigned int *)PIX_CTRL;
-
-static unsigned short fb[H * STRIDE];
-
-static Seg  road[NSEG];
-static int  cpfx[NSEG + 1];
-
-static Plr  pl;
-static Enm  en[NEMAX];
-static Gam  gm;
-
-static bool kU, kD, kL, kR, kSh, kEnt, kEsc;
-
-static unsigned int rng = 0x93A1u;
-
-/* ================================================================
- * Math
- * ================================================================ */
-static int ia(int v) { return v < 0 ? -v : v; }
-static int ic(int v, int lo, int hi) { return v < lo ? lo : v > hi ? hi : v; }
-static int imx(int a, int b) { return a > b ? a : b; }
-static int imn(int a, int b) { return a < b ? a : b; }
-
-static int ir(int lo, int hi) {
-    rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-    if (hi <= lo) return lo;
-    return lo + (int)(rng & 0x7FFFu) % (hi - lo + 1);
-}
-
-static unsigned short sh(unsigned short c, int s) {
-    int r = ((c >> 11) & 0x1F) * s >> 8;
-    int g = ((c >>  5) & 0x3F) * s >> 8;
-    int b = ( c        & 0x1F) * s >> 8;
-    if (r > 31) r = 31; if (g > 63) g = 63; if (b > 31) b = 31;
-    return (unsigned short)((r << 11) | (g << 5) | b);
-}
-
-/* ================================================================
- * Drawing primitives — write to fb[] only
- * ================================================================ */
-static inline void px(int x, int y, unsigned short c) {
-    if ((unsigned)x < W && (unsigned)y < (unsigned)H)
-        fb[y * STRIDE + x] = c;
-}
-
-static void hl(int x, int y, int l, unsigned short c) {
-    if ((unsigned)y >= H || l <= 0) return;
-    int x0 = x, x1 = x + l - 1;
-    if (x1 < 0 || x0 >= W) return;
-    if (x0 < 0) x0 = 0; if (x1 >= W) x1 = W - 1;
-    for (int i = x0; i <= x1; i++) fb[y * STRIDE + i] = c;
-}
-
-static void fr(int x, int y, int w, int h, unsigned short c) {
-    if (w <= 0 || h <= 0) return;
-    int x0 = x, y0 = y, x1 = x + w, y1 = y + h;
-    if (x1 <= 0 || y1 <= 0 || x0 >= W || y0 >= H) return;
-    if (x0 < 0) x0 = 0; if (y0 < 0) y0 = 0;
-    if (x1 > W) x1 = W; if (y1 > H) y1 = H;
-    for (int j = y0; j < y1; j++)
-        for (int i = x0; i < x1; i++)
-            fb[j * STRIDE + i] = c;
-}
-
-static void dr(int x, int y, int w, int h, unsigned short c) {
-    hl(x, y, w, c); hl(x, y + h - 1, w, c);
-    for (int j = y; j < y + h; j++) { px(x, j, c); px(x + w - 1, j, c); }
-}
-
-static void vl(int x, int y, int l, unsigned short c) {
-    for (int j = 0; j < l; j++) px(x, y + j, c);
-}
-
-static void diam(int cx, int cy, int r, unsigned short c) {
-    for (int dy = -r; dy <= r; dy++) {
-        int hw = r - ia(dy);
-        hl(cx - hw, cy + dy, hw * 2 + 1, c);
-    }
-}
-
-/* ================================================================
- * 5×7 digit font
- * ================================================================ */
-static const unsigned char DIG[10][7] = {
-    {0x1C,0x14,0x14,0x14,0x14,0x14,0x1C},
-    {0x04,0x04,0x04,0x04,0x04,0x04,0x04},
-    {0x1C,0x04,0x04,0x1C,0x10,0x10,0x1C},
-    {0x1C,0x04,0x04,0x1C,0x04,0x04,0x1C},
-    {0x14,0x14,0x14,0x1C,0x04,0x04,0x04},
-    {0x1C,0x10,0x10,0x1C,0x04,0x04,0x1C},
-    {0x1C,0x10,0x10,0x1C,0x14,0x14,0x1C},
-    {0x1C,0x04,0x04,0x04,0x04,0x04,0x04},
-    {0x1C,0x14,0x14,0x1C,0x14,0x14,0x1C},
-    {0x1C,0x14,0x14,0x1C,0x04,0x04,0x1C},
+/* Sine LUT (64 entries) */
+static const short SIN64[64]={
+  0,25,50,75,100,125,150,175,198,222,245,267,289,310,330,350,
+  368,385,401,416,429,441,452,462,471,478,484,489,492,494,495,495,
+  494,492,489,484,478,471,462,452,441,429,416,401,385,368,350,330,
+  310,289,267,245,222,198,175,150,125,100,75,50,25,0,-25,-50
 };
+static int isin(int a){
+  a&=255;
+  if(a<64)return SIN64[a];
+  if(a<128)return SIN64[127-a];
+  if(a<192)return -SIN64[a-128];
+  return -SIN64[255-a];
+}
 
-static void ddig(int x, int y, int d, unsigned short c) {
-    if (d < 0 || d > 9) return;
-    for (int r = 0; r < 7; r++) {
-        unsigned char b = DIG[d][r];
-        for (int col = 0; col < 5; col++)
-            if (b & (0x10 >> col)) px(x + col, y + r, c);
+/* Types */
+typedef struct{
+  int x_fp, stv, vel, hp, score, invuln, bst;
+  bool alive, boosting;
+} Plr;
+typedef struct{
+  bool active;
+  int x_fp, wz, spd, type, anim;
+} Enm;
+typedef enum{ST_MENU,ST_PLAY,ST_PAUSE,ST_OVER}GSt;
+typedef struct{
+  GSt st;
+  int fr, scroll, curve, curve_t, spawn_t;
+} Gm;
+
+/* Globals */
+static volatile unsigned int*const g_ps2=(volatile unsigned int*)PS2ADR;
+static volatile unsigned int*const g_tmr=(volatile unsigned int*)TMRADR;
+static volatile unsigned int*const g_pbc=(volatile unsigned int*)PIXCTRL;
+static unsigned short fb[SH*STR];
+static Plr pl;
+static Enm en[NEMAX];
+static Gm gm;
+static bool kU,kD,kL,kR,kSh,kEnt,kEsc;
+static unsigned int rng=0xACE1u;
+
+/* Math */
+static int iabs(int v){return v<0?-v:v;}
+static int iclamp(int v,int lo,int hi){return v<lo?lo:v>hi?hi:v;}
+static int imax(int a,int b){return a>b?a:b;}
+static int irand(int lo,int hi){
+  rng^=rng<<13;rng^=rng>>17;rng^=rng<<5;
+  if(hi<=lo)return lo;
+  return lo+(int)(rng&0x7FFFu)%(hi-lo+1);
+}
+
+/* Framebuffer primitives */
+static inline void putpx(int x,int y,unsigned short c){
+  if((unsigned)x<SW&&(unsigned)y<(unsigned)SH)fb[y*STR+x]=c;
+}
+static void hline(int x,int y,int l,unsigned short c){
+  if((unsigned)y>=SH||l<=0)return;
+  int x0=x,x1=x+l-1;
+  if(x1<0||x0>=SW)return;
+  if(x0<0)x0=0;
+  if(x1>=SW)x1=SW-1;
+  for(int i=x0;i<=x1;i++)fb[y*STR+i]=c;
+}
+static void fillr(int x,int y,int w,int h,unsigned short c){
+  if(w<=0||h<=0)return;
+  int x0=x,y0=y,x1=x+w,y1=y+h;
+  if(x1<=0||y1<=0||x0>=SW||y0>=SH)return;
+  if(x0<0)x0=0;
+  if(y0<0)y0=0;
+  if(x1>SW)x1=SW;
+  if(y1>SH)y1=SH;
+  for(int j=y0;j<y1;j++)
+    for(int i=x0;i<x1;i++)
+      fb[j*STR+i]=c;
+}
+static void bordr(int x,int y,int w,int h,unsigned short c){
+  hline(x,y,w,c);hline(x,y+h-1,w,c);
+  for(int j=y;j<y+h;j++){putpx(x,j,c);putpx(x+w-1,j,c);}
+}
+static void vline(int x,int y,int l,unsigned short c){
+  for(int j=0;j<l;j++)putpx(x,y+j,c);
+}
+static void diamond(int cx,int cy,int r,unsigned short c){
+  for(int dy=-r;dy<=r;dy++){int hw=r-iabs(dy);hline(cx-hw,cy+dy,hw*2+1,c);}
+}
+static void clrfb(unsigned short c){
+  unsigned int pk=((unsigned int)c<<16)|c;
+  unsigned int*p=(unsigned int*)fb;
+  int n=(STR*SH)>>1;
+  for(int i=0;i<n;i++)p[i]=pk;
+}
+
+/* 5x7 digit font */
+static const unsigned char DFONT[10][7]={
+  {0x1C,0x14,0x14,0x14,0x14,0x14,0x1C},{0x04,0x04,0x04,0x04,0x04,0x04,0x04},
+  {0x1C,0x04,0x04,0x1C,0x10,0x10,0x1C},{0x1C,0x04,0x04,0x1C,0x04,0x04,0x1C},
+  {0x14,0x14,0x14,0x1C,0x04,0x04,0x04},{0x1C,0x10,0x10,0x1C,0x04,0x04,0x1C},
+  {0x1C,0x10,0x10,0x1C,0x14,0x14,0x1C},{0x1C,0x04,0x04,0x04,0x04,0x04,0x04},
+  {0x1C,0x14,0x14,0x1C,0x14,0x14,0x1C},{0x1C,0x14,0x14,0x1C,0x04,0x04,0x1C},
+};
+static void drawdig(int x,int y,int d,unsigned short c){
+  if(d<0||d>9)return;
+  for(int r=0;r<7;r++){
+    unsigned char b=DFONT[d][r];
+    for(int col=0;col<5;col++)
+      if(b&(0x10>>col))putpx(x+col,y+r,c);
+  }
+}
+static void drawnum(int x,int y,int n,unsigned short c){
+  if(n<0)n=0;
+  if(n==0){drawdig(x,y,0,c);return;}
+  char buf[10];int len=0;
+  while(n>0){buf[len++]=(char)(n%10);n/=10;}
+  for(int i=len-1;i>=0;i--){drawdig(x,y,(int)buf[i],c);x+=6;}
+}
+
+/* Hardware */
+static void blit(void){
+  volatile unsigned int*d=(volatile unsigned int*)PIXBUF;
+  unsigned int*s=(unsigned int*)fb;
+  int n=(STR*SH)>>1;
+  for(int i=0;i<n;i++)d[i]=s[i];
+}
+static void hw_init(void){g_pbc[1]=PIXBUF;clrfb(0);blit();}
+static void tmr_init(void){g_tmr[2]=0xB4B3u;g_tmr[3]=0x000Cu;g_tmr[1]=0x0006u;}
+static void tmr_wait(void){while(!(g_tmr[0]&1u));g_tmr[0]=0;}
+
+/* PS/2 input */
+static void poll_input(void){
+  static bool ext=false,rel=false;
+  while(1){
+    unsigned int d=*g_ps2;
+    if(!(d&0x8000u))break;
+    unsigned int b=d&0xFFu;
+    if(b==0xE0u){ext=true;continue;}
+    if(b==0xF0u){rel=true;continue;}
+    bool p=!rel;rel=false;
+    if(ext){
+      if(b==0x75u)kU=p;
+      else if(b==0x72u)kD=p;
+      else if(b==0x6Bu)kL=p;
+      else if(b==0x74u)kR=p;
+      ext=false;continue;
     }
-}
-
-static void dnum(int x, int y, int n, unsigned short c) {
-    if (n < 0) n = 0;
-    if (n == 0) { ddig(x, y, 0, c); return; }
-    char buf[10]; int len = 0;
-    while (n > 0) { buf[len++] = (char)(n % 10); n /= 10; }
-    for (int i = len - 1; i >= 0; i--) { ddig(x, y, (int)buf[i], c); x += 6; }
-}
-
-/* ================================================================
- * Clear
- * ================================================================ */
-static void clr(unsigned short c) {
-    unsigned int pk = ((unsigned int)c << 16) | c;
-    unsigned int *p = (unsigned int *)fb;
-    int n = (STRIDE * H) >> 1;
-    for (int i = 0; i < n; i++) p[i] = pk;
+    if(b==0x1Du)kU=p;
+    else if(b==0x1Bu)kD=p;
+    else if(b==0x1Cu)kL=p;
+    else if(b==0x23u)kR=p;
+    else if(b==0x12u||b==0x59u)kSh=p;
+    else if(b==0x5Au)kEnt=p;
+    else if(b==0x76u)kEsc=p;
+  }
 }
 
 /* ================================================================
- * Hardware
+ * SKY, BUILDINGS, RAIN
  * ================================================================ */
-static void blit(void) {
-    volatile unsigned int *d = (volatile unsigned int *)PIX_BUF;
-    unsigned int *s = (unsigned int *)fb;
-    int n = (STRIDE * H) >> 1;
-    for (int i = 0; i < n; i++) d[i] = s[i];
+static void draw_sky(void){
+  for(int y=0;y<=HOR+2;y++){
+    unsigned short c;
+    if(y<=HOR/2){int b=1+(y>>2);c=(unsigned short)b;}
+    else{int b=3+((y-HOR/2)>>2);int g=1+((y-HOR/2)>>3);c=(unsigned short)((g<<5)|b);}
+    hline(0,y,SW,c);
+  }
+  hline(0,HOR,SW,C_HOR);hline(0,HOR+1,SW,0x1082u);
+  /* Bat-Signal */
+  int bx=264,by=26;
+  for(int y=6;y<HOR;y++){int hw=2+(y-6)*3/(HOR-6);hline(bx-hw,y,hw*2,0x0103u);}
+  diamond(bx,by,12,0x3180u);diamond(bx,by,10,0x8C00u);diamond(bx,by,8,C_Y);
+  fillr(bx-5,by-3,10,8,0x0001u);fillr(bx-9,by-1,5,4,0x0001u);
+  fillr(bx+4,by-1,5,4,0x0001u);fillr(bx-3,by-6,2,4,0x0001u);fillr(bx+1,by-6,2,4,0x0001u);
 }
-
-static void vinit(void) { pbc[1] = PIX_BUF; clr(0); blit(); }
-static void tinit(void) { tmr[2]=0xB4B3u; tmr[3]=0x000Cu; tmr[1]=0x0006u; }
-static void twait(void) { while (!(tmr[0] & 1u)); tmr[0] = 0; }
-
-/* ================================================================
- * Road
- * ================================================================ */
-static int wrapz(int z) { int m = z % TRACKLEN; return m < 0 ? m + TRACKLEN : m; }
-static int segidx(int wz) { return wrapz(wz) / SEGLEN; }
-
-static void sample(int wz, int *cx, int *hw, int *rum) {
-    int i = segidx(wz);
-    int loc = wrapz(wz) % SEGLEN;
-    int t = (loc * FP) / SEGLEN;
-    int i1 = (i + 1) % NSEG;
-    *cx = cpfx[i] + ((cpfx[i + 1] - cpfx[i]) * t) / FP;
-    *hw = road[i].width + ((road[i1].width - road[i].width) * t) / FP;
-    *rum = road[i].rumble;
+static void draw_buildings(void){
+  int scr=gm.scroll;
+  /* Far layer */
+  {int off=(scr/4)%320;unsigned int s=0xCAFE0000u;
+   for(int b=0;b<18;b++){s=s*1664525u+1013904223u;
+     int bw=10+(int)((s>>28)&0xF)*2;int bh=7+(int)((s>>24)&0xF);
+     int bx=((int)((s>>8)&0xFF)%320-off+640)%320;
+     int by=HOR+5-bh;fillr(bx,by,bw,bh,C_BD1);
+     if((s>>3)&1)putpx(bx+bw/2,by+2,((s>>2)&1)?0x0040u:0x0003u);}}
+  /* Mid layer */
+  {int off=(scr/2)%320;unsigned int s=0xDEADBEEFu;
+   for(int b=0;b<12;b++){s=s*1664525u+1013904223u;
+     int bw=14+(int)((s>>28)&0xF)*3;int bh=12+(int)((s>>22)&0x1F);
+     int bx=((int)((s>>8)&0x1FF)%320-off+960)%320;
+     int by=HOR+5-bh;if(by<2)by=2;
+     fillr(bx,by,bw,bh,C_BD3);bordr(bx,by,bw,bh,0x31A6u);
+     fillr(bx+2,by-2,bw-4,3,C_BD3);
+     unsigned short nc=((s>>1)&1)?C_NP:C_NT;
+     fillr(bx+2,by+bh-4,bw-4,2,nc);
+     for(int wi=0;wi<(bw-4)/5&&wi<3;wi++)
+       for(int wj=0;wj<2;wj++)
+         if((s>>(wi+wj*3))&1)fillr(bx+3+wi*5,by+4+wj*5,3,3,C_Y);}}
+  /* Near right */
+  {int off=(scr*3/4)%200;unsigned int s=0xABCD1234u;
+   for(int b=0;b<5;b++){s=s*1664525u+1013904223u;
+     int bw=20+(int)((s>>28)&0xF)*4;int bh=24+(int)((s>>22)&0x1F)*2;
+     int bx=225+(int)((s>>8)&0x3F)%(SW-225-bw+1);
+     if(bx+bw>SW)bx=SW-bw;
+     int by=HOR+5-bh;if(by<2)by=2;
+     int vo=((b*47+off*2)%(bh+40))-20;by+=vo;if(by<2)by=2;
+     fillr(bx,by,bw,bh,C_BD4);bordr(bx,by,bw,bh,C_MG);
+     unsigned short nc=((b^(gm.fr/60))&1)?C_NP:C_O;
+     fillr(bx+3,by+3,bw-6,5,C_K);
+     for(int si=0;si<(bw-8)/4;si++)fillr(bx+4+si*4,by+4,2,3,nc);}}
+  /* Near left */
+  {int off=(scr*3/4+100)%200;unsigned int s=0x5A5ABEADu;
+   for(int b=0;b<5;b++){s=s*1664525u+1013904223u;
+     int bw=20+(int)((s>>28)&0xF)*4;int bh=24+(int)((s>>22)&0x1F)*2;
+     int bx2=(int)((s>>8)&0x3F)%imax(95-bw,1);
+     if(bx2<0)bx2=0;
+     if(bx2+bw>95)bx2=95-bw;
+     int by=HOR+5-bh;if(by<2)by=2;
+     int vo=((b*53+off*2)%(bh+40))-20;by+=vo;if(by<2)by=2;
+     fillr(bx2,by,bw,bh,C_BD4);bordr(bx2,by,bw,bh,C_MG);
+     unsigned short nc=((b^(gm.fr/60+1))&1)?C_O:C_C;
+     fillr(bx2+3,by+3,bw-6,5,C_K);
+     for(int si=0;si<(bw-8)/4;si++)fillr(bx2+4+si*4,by+4,2,3,nc);}}
 }
-
-static int lanex(int lane, int hw) {
-    int lw = (hw * 2) / NLANES;
-    return -hw + lw * lane + lw / 2;
-}
-
-/* ================================================================
- * Projection
- * ================================================================ */
-static int pjy(int z) { return z < 1 ? H : HOR_Y + PK / z; }
-static int pjx(int wx, int z) { return z < 1 ? CX : CX + (wx * CAM_D) / z; }
-static int dshade(int z) { return ic(255 - z / 32, 80, 255); }
-
-/* ================================================================
- * Input
- * ================================================================ */
-static void input(void) {
-    static bool ext = false, rel = false;
-    while (1) {
-        unsigned int d = *ps2;
-        if (!(d & 0x8000u)) break;
-        unsigned int b = d & 0xFFu;
-        if (b == 0xE0u) { ext = true; continue; }
-        if (b == 0xF0u) { rel = true; continue; }
-        bool p = !rel; rel = false;
-        if (ext) {
-            if      (b == 0x75u) kU = p;
-            else if (b == 0x72u) kD = p;
-            else if (b == 0x6Bu) kL = p;
-            else if (b == 0x74u) kR = p;
-            ext = false; continue;
-        }
-        if      (b == 0x1Du) kU  = p;
-        else if (b == 0x1Bu) kD  = p;
-        else if (b == 0x1Cu) kL  = p;
-        else if (b == 0x23u) kR  = p;
-        else if (b == 0x12u || b == 0x59u) kSh = p;
-        else if (b == 0x5Au) kEnt = p;
-        else if (b == 0x76u) kEsc = p;
-    }
-}
-
-/* ================================================================
- * Build track
- * ================================================================ */
-static void buildTrack(void) {
-    int i;
-    for (i = 0; i < NSEG; i++) {
-        road[i].curve = 0;
-        road[i].width = 1500;
-        road[i].rumble = i & 1;
-    }
-    /* Curves */
-    for (i =  20; i <  70; i++) road[i].curve =  18;
-    for (i =  70; i < 110; i++) road[i].curve =  32;
-    for (i = 110; i < 150; i++) road[i].curve = -26;
-    for (i = 150; i < 200; i++) road[i].curve = -36;
-    for (i = 200; i < 240; i++) road[i].curve =  14;
-    for (i = 240; i < 285; i++) road[i].curve = -10;
-    /* Width variation */
-    for (i = 0; i < NSEG; i++)
-        road[i].width = ic(1450 + ((i * 53) % 260) - 130, 1280, 1640);
-    /* Prefix sum for curve → lateral offset */
-    cpfx[0] = 0;
-    for (i = 0; i < NSEG; i++)
-        cpfx[i + 1] = cpfx[i] + road[i].curve;
-    /* Close the loop */
-    int drift = cpfx[NSEG];
-    if (drift)
-        for (i = 0; i <= NSEG; i++)
-            cpfx[i] -= (drift * i) / NSEG;
+static void draw_rain(void){
+  for(int i=0;i<60;i++){
+    int rx=(i*73+gm.fr*2)%SW;int ry=(i*53+gm.fr*5)%SH;
+    putpx(rx,ry,0x4C99u);putpx(rx,ry+1,0x4C99u);
+  }
 }
 
 /* ================================================================
- * SKY + BAT SIGNAL
+ * ROAD — scanline renderer
+ *
+ * Road center stays at SCX + curve_offset — it does NOT shift
+ * with playerX. This means steering moves the CAR, not the road.
+ *
+ * Stripes scroll with gm.scroll (tied to speed).
  * ================================================================ */
-static void drawSky(void) {
-    for (int y = 0; y <= HOR_Y + 2; y++) {
-        int t = (y * 255) / (HOR_Y + 2);
-        unsigned short c;
-        if (y <= HOR_Y / 2)
-            c = sh(SKY_T, 255 - t / 2);
-        else
-            c = sh(SKY_M, 170 + t / 3);
-        hl(0, y, W, c);
-    }
-    hl(0, HOR_Y, W, HOR_G);
-    hl(0, HOR_Y + 1, W, sh(HOR_G, 180));
+static void draw_road(void){
+  for(int y=HOR+1;y<SH;y++){
+    int dy=y-HOR;
+    int hw=(RHW*dy)/PROJ;              /* road half-width in px */
+    /* Curve shifts road center (NOT player — player moves independently) */
+    int cvoff=(gm.curve*dy*dy)/(PROJ*64);
+    int cx=SCX+cvoff;                  /* road center on screen */
 
-    /* Bat signal */
-    int bx = 264, by = 26;
-    for (int y = 6; y < HOR_Y; y++) {
-        int hw = 2 + (y - 6) * 3 / (HOR_Y - 6);
-        hl(bx - hw, y, hw * 2, 0x0103u);
-    }
-    diam(bx, by, 12, 0x3180u);
-    diam(bx, by, 10, 0x8C00u);
-    diam(bx, by, 8, Ye);
-    /* bat silhouette cutout */
-    fr(bx - 5, by - 3, 10, 8, 0x0001u);
-    fr(bx - 9, by - 1, 5, 4, 0x0001u);
-    fr(bx + 4, by - 1, 5, 4, 0x0001u);
-    fr(bx - 3, by - 6, 2, 4, 0x0001u);
-    fr(bx + 1, by - 6, 2, 4, 0x0001u);
-}
+    /* Stripe pattern based on scroll */
+    int zDepth=(PROJ*16)/(dy+1);       /* virtual z for stripe calc */
+    int stripe=((gm.scroll+zDepth)>>5)&1;
 
-/* ================================================================
- * 4-LAYER PARALLAX GOTHAM SKYLINE
- * ================================================================ */
-static void drawSkyline(void) {
-    int scr = FRFP(gm.cam_z);
+    /* Depth-shaded road colour */
+    int t=(dy*12)/(SH-HOR);
+    unsigned short road_c=(unsigned short)(((4+t)<<11)|((9+t)<<5)|(4+t));
+    if(stripe) road_c=(unsigned short)(road_c+0x0842u);
 
-    /* Layer 0: distant — very dark, tiny, 1/6 scroll */
-    { int off = (scr / 6) % 320; unsigned int s = 0xCAFE0000u;
-      for (int b = 0; b < 20; b++) {
-          s = s * 1664525u + 1013904223u;
-          int bw = 8 + (int)((s >> 28) & 0xF) * 2;
-          int bh = 5 + (int)((s >> 24) & 0xF);
-          int bx = ((int)((s >> 8) & 0xFF) % 320 - off + 640) % 320;
-          int by = HOR_Y + 3 - bh;
-          fr(bx, by, bw, bh, BLD_1);
-          if ((s >> 3) & 1) px(bx + bw / 2, by + 2, ((s >> 2) & 1) ? 0x0040u : 0x0003u);
+    unsigned short kc=stripe?C_RMA:C_RMB;
+    unsigned short grass=dy<60?C_GRF:C_GRN;
+    int kw=imax(dy/20,1);
+    int rl=cx-hw, rr=cx+hw;
+
+    /* Grass (full line first) */
+    hline(0,y,SW,grass);
+    /* Sidewalk */
+    if(dy>30){int sw=imax(hw/16,1);hline(rl-sw,y,sw,C_SWK);hline(rr,y,sw,C_SWK);}
+    /* Rumble strips */
+    hline(rl,y,kw,kc);
+    hline(rr-kw,y,kw,kc);
+    /* Road surface */
+    if(rr-rl-kw*2>0) hline(rl+kw,y,rr-rl-kw*2,road_c);
+    /* Lane markers */
+    if(!stripe||dy<20){
+      for(int ln=1;ln<3;ln++){
+        int lx=cx-hw+ln*(2*hw/3);
+        if((unsigned)lx<(unsigned)SW)putpx(lx,y,C_W);
+        if(dy>80&&(unsigned)(lx+1)<(unsigned)SW)putpx(lx+1,y,C_W);
       }
     }
-
-    /* Layer 1: mid — neon windows, 1/3 scroll */
-    { int off = (scr / 3) % 320; unsigned int s = 0xDEADBEEFu;
-      for (int b = 0; b < 14; b++) {
-          s = s * 1664525u + 1013904223u;
-          int bw = 14 + (int)((s >> 28) & 0xF) * 3;
-          int bh = 12 + (int)((s >> 22) & 0x1F);
-          int bx = ((int)((s >> 8) & 0x1FF) % 320 - off + 960) % 320;
-          int by = HOR_Y + 4 - bh; if (by < 2) by = 2;
-          fr(bx, by, bw, bh, BLD_3);
-          dr(bx, by, bw, bh, 0x31A6u);
-          /* art-deco stepped parapet */
-          fr(bx + 2, by - 2, bw - 4, 3, BLD_3);
-          fr(bx + 4, by - 4, imx(bw - 8, 2), 3, BLD_3);
-          /* neon sign */
-          unsigned short nc = ((s >> 1) & 1) ? NEON_P : NEON_T;
-          fr(bx + 2, by + bh - 4, bw - 4, 2, nc);
-          /* windows */
-          for (int wi = 0; wi < (bw - 4) / 5 && wi < 4; wi++)
-              for (int wj = 0; wj < 3; wj++)
-                  if ((s >> (wi + wj * 3)) & 1)
-                      fr(bx + 3 + wi * 5, by + 4 + wj * 5, 3, 3, Ye);
-      }
-    }
-
-    /* Layer 2: near-right — large buildings, 3/4 scroll */
-    { int off = (scr * 3 / 4) % 200; unsigned int s = 0xABCD1234u;
-      for (int b = 0; b < 5; b++) {
-          s = s * 1664525u + 1013904223u;
-          int bw = 22 + (int)((s >> 28) & 0xF) * 4;
-          int bh = 28 + (int)((s >> 22) & 0x1F) * 2;
-          int bx = 224 + (int)((s >> 8) & 0x3F) % (W - 224 - bw + 1);
-          if (bx + bw > W) bx = W - bw;
-          int by = HOR_Y + 4 - bh; if (by < 2) by = 2;
-          int voff = ((b * 47 + off * 2) % (bh + 40)) - 20;
-          by += voff; if (by < 2) by = 2;
-          fr(bx, by, bw, bh, BLD_4); dr(bx, by, bw, bh, MG);
-          unsigned short nc = ((b ^ (gm.fr / 60)) & 1) ? NEON_P : Or;
-          fr(bx + 3, by + 3, bw - 6, 5, K);
-          for (int si = 0; si < (bw - 8) / 4; si++)
-              fr(bx + 4 + si * 4, by + 4, 2, 3, nc);
-          /* water tower */
-          if ((s >> 5) & 1) { fr(bx + bw / 2 - 3, by - 8, 6, 8, MG); diam(bx + bw / 2, by - 9, 3, DG); }
-      }
-    }
-
-    /* Layer 3: near-left — large buildings, 3/4 scroll */
-    { int off = (scr * 3 / 4 + 100) % 200; unsigned int s = 0x5A5ABEADu;
-      for (int b = 0; b < 5; b++) {
-          s = s * 1664525u + 1013904223u;
-          int bw = 22 + (int)((s >> 28) & 0xF) * 4;
-          int bh = 28 + (int)((s >> 22) & 0x1F) * 2;
-          int bx = (int)((s >> 8) & 0x3F) % imx(96 - bw, 1);
-          if (bx < 0) bx = 0; if (bx + bw > 96) bx = 96 - bw;
-          int by = HOR_Y + 4 - bh; if (by < 2) by = 2;
-          int voff = ((b * 53 + off * 2) % (bh + 40)) - 20;
-          by += voff; if (by < 2) by = 2;
-          fr(bx, by, bw, bh, BLD_4); dr(bx, by, bw, bh, MG);
-          unsigned short nc = ((b ^ (gm.fr / 60 + 1)) & 1) ? Or : Cy;
-          fr(bx + 3, by + 3, bw - 6, 5, K);
-          for (int si = 0; si < (bw - 8) / 4; si++)
-              fr(bx + 4 + si * 4, by + 4, 2, 3, nc);
-          if ((s >> 5) & 1) { fr(bx + bw / 2 - 3, by - 8, 6, 8, MG); diam(bx + bw / 2, by - 9, 3, DG); }
-      }
-    }
-}
-
-/* ================================================================
- * PERSPECTIVE ROAD (per-scanline)
- * ================================================================ */
-static void drawRoad(void) {
-    for (int y = HOR_Y + 2; y < H; y++) {
-        int dy = y - HOR_Y;
-        if (dy <= 0) continue;
-        int zv = PK / dy;
-        int wz = FRFP(gm.cam_z) + zv;
-
-        int rcx, rhw, rum;
-        sample(wz, &rcx, &rhw, &rum);
-
-        int center = pjx(rcx - FRFP(pl.x_fp), zv);
-        int rhpx = imx((rhw * CAM_D) / zv, 2);
-
-        int gs = ic(70 + dy, 70, 220);
-        int rs = ic(90 + dy, 90, 230);
-
-        unsigned short grass = sh(dy < 95 ? GR_F : GR_N, gs);
-        unsigned short road_c = sh(dy < 120 ? RD_F : RD_N, rs);
-
-        int stripe = ((wz / 160) + rum) & 1;
-        if (stripe) road_c = sh(road_c, 230);  /* alternate shade */
-
-        unsigned short rum_c = stripe ? RUM_A : RUM_B;
-        int kw = imx(rhpx / 10, 1);
-        int lft = center - rhpx;
-        int rgt = center + rhpx;
-
-        /* Grass + sidewalk */
-        hl(0, y, W, grass);
-        /* Sidewalk strips at road edges */
-        if (dy > 20) {
-            int sw = imx(rhpx / 16, 1);
-            hl(lft - sw, y, sw, SW_C);
-            hl(rgt, y, sw, SW_C);
-        }
-
-        /* Road surface */
-        hl(lft, y, rgt - lft, road_c);
-        /* Kerb rumble */
-        hl(lft, y, kw, rum_c);
-        hl(rgt - kw, y, kw, rum_c);
-
-        /* Lane dividers (dashed) */
-        for (int lane = 1; lane < NLANES; lane++) {
-            int lwx = lanex(lane, rhw) - lanex(0, rhw);
-            int lx = pjx(rcx + lwx - FRFP(pl.x_fp), zv);
-            int dash = ((wz / 220) + lane) & 1;
-            if (dash || dy > 120) {
-                px(lx, y, LANE_C);
-                if (dy > 80) px(lx + 1, y, sh(LANE_C, 180));
-            }
-        }
-        /* Centre line (solid yellow) */
-        px(center, y, Ye);
-        if (rhpx > 10) px(center + 1, y, sh(Ye, 180));
-    }
+    /* Centre line */
+    if((unsigned)cx<(unsigned)SW)putpx(cx,y,C_Y);
+    if((unsigned)(cx+1)<(unsigned)SW)putpx(cx+1,y,C_Y);
+  }
 }
 
 /* ================================================================
  * STREET LAMPS
  * ================================================================ */
-static void drawLamps(void) {
-    int camz = FRFP(gm.cam_z);
-    int spacing = 90;
-    int off = camz % spacing;
-    for (int yi = -spacing; yi < H + spacing; yi += spacing) {
-        int y = yi + off;
-        if (y <= HOR_Y || y >= H) continue;
-        int dy = y - HOR_Y;
-        int zv = PK / dy;
-        int wz = camz + zv;
-        int rcx, rhw, rum;
-        sample(wz, &rcx, &rhw, &rum);
-        int center = pjx(rcx - FRFP(pl.x_fp), zv);
-        int rhpx = imx((rhw * CAM_D) / zv, 2);
-        int ph = imx(dy * 18 / 512 + 2, 3);
-        int arm = imx(dy * 10 / 512 + 1, 2);
-        /* Left */
-        { int lx = center - rhpx - imx(dy * 8 / 512, 2);
-          int ty = y - ph; if (ty < 0) ty = 0;
-          vl(lx, ty, ph, LG);
-          hl(lx, ty, arm, LG);
-          diam(lx + arm, ty, imx(dy * 2 / 512, 1), Ye);
-          if (dy > 60) fr(lx + arm - 3, ty + 2, 6, 3, 0x0840u); }
-        /* Right */
-        { int rx = center + rhpx + imx(dy * 8 / 512, 2);
-          int ty = y - ph; if (ty < 0) ty = 0;
-          vl(rx, ty, ph, LG);
-          hl(rx - arm, ty, arm, LG);
-          diam(rx - arm, ty, imx(dy * 2 / 512, 1), Ye);
-          if (dy > 60) fr(rx - arm - 3, ty + 2, 6, 3, 0x0840u); }
-    }
+static void draw_lamps(void){
+  int spacing=90;int off=gm.scroll%spacing;
+  for(int yi=-spacing;yi<SH+spacing;yi+=spacing){
+    int y=yi+off;if(y<=HOR||y>=SH)continue;
+    int dy=y-HOR;
+    int hw=(RHW*dy)/PROJ;
+    int cvoff=(gm.curve*dy*dy)/(PROJ*64);
+    int cx=SCX+cvoff;
+    int ph=imax(dy*18/PROJ+2,3);int arm=imax(dy*10/PROJ+1,2);
+    {int lx=cx-hw-imax(dy*8/PROJ,2);int ty=y-ph;if(ty<0)ty=0;
+     vline(lx,ty,ph,C_LG);hline(lx,ty,arm,C_LG);diamond(lx+arm,ty,imax(dy*2/PROJ,1),C_Y);}
+    {int rx=cx+hw+imax(dy*8/PROJ,2);int ty=y-ph;if(ty<0)ty=0;
+     vline(rx,ty,ph,C_LG);hline(rx-arm,ty,arm,C_LG);diamond(rx-arm,ty,imax(dy*2/PROJ,1),C_Y);}
+  }
 }
 
 /* ================================================================
- * RAIN
- * ================================================================ */
-static void drawRain(void) {
-    for (int i = 0; i < 80; i++) {
-        int rx = (i * 73 + gm.fr * 2) % W;
-        int ry = (i * 53 + gm.fr * 5) % H;
-        unsigned short rc = (i & 3) ? RAIN_C : 0x7BDFu;
-        px(rx, ry, rc);
-        if (rx > 0 && ry > 0) px(rx - 1, ry - 1, rc);
-        if (rx > 1 && ry < H - 1) px(rx - 2, ry + 1, 0x2946u);
-    }
-}
-
-/* ================================================================
- * BATMOBILE — 8-layer BTAS sprite stack
+ * BATMOBILE — drawn at CAR position (moves with playerX!)
  *
- * BTAS shape: blunt slatted nose → cockpit bubble → wide body →
- *             horizontal tailfins flanking central turbine → jet exhaust
+ * car_sx = road_center + playerX * road_hw_at_bottom / FP
+ * This is the KEY difference: the car slides across the road.
  * ================================================================ */
-static void drawPlayer(void) {
-    if (!pl.alive) return;
-    if (pl.invuln > 0 && (gm.fr & 3)) return;
+static void draw_batmobile(void){
+  if(!pl.alive)return;
+  if(pl.invuln>0&&(gm.fr&3))return;
 
-    int zp = PK / (PLR_SY - HOR_Y);
-    int rcx, rhw, rum;
-    sample(FRFP(gm.cam_z) + zp, &rcx, &rhw, &rum);
-    int cx = pjx(rcx - FRFP(pl.x_fp), zp);
+  int dy_bot=SH-1-HOR;
+  int hw_bot=(RHW*dy_bot)/PROJ;
+  int cvoff=(gm.curve*dy_bot*dy_bot)/(PROJ*64);
+  int road_cx=SCX+cvoff;
 
-    /* Slight visual lean when steering */
-    cx += ic(pl.steer_fp / (FP / 4), -10, 10);
+  /* CAR position = road centre + player offset */
+  int cx=road_cx+(pl.x_fp*hw_bot)/FP;
+  /* Add visual lean from steering input */
+  cx+=iclamp(pl.stv*2,-12,12);
+  int cy=SH-38;
 
-    int cy = PLR_SY;
-
-    /* === SHADOW === */
-    fr(cx - 20, cy + 3, 40, 5, SHAD_C);
-
-    /* === BOOST / EXHAUST === */
-    if (pl.boost_t > 0) {
-        int fh = 8 + ((gm.fr >> 1) & 3);
-        fr(cx - 5, cy + 2, 10, fh, Or);
-        fr(cx - 3, cy + 3, 6, fh - 2, Ye);
-    } else if (gm.fr & 8) {
-        fr(cx - 3, cy + 2, 6, 5, Or);
-    }
-
-    /* === LAYER 0: Tail fins (widest, rearmost) === */
-    fr(cx - 24, cy - 4, 14, 10, BB0);       /* left fin  */
-    hl(cx - 24, cy - 4, 14, BED);           /* fin edge  */
-    fr(cx + 10, cy - 4, 14, 10, BB0);       /* right fin */
-    hl(cx + 10, cy - 4, 14, BED);
-    /* Centre turbine housing */
-    fr(cx - 9, cy - 4, 18, 10, BB1);
-    diam(cx, cy + 1, 3, DG);
-
-    /* === LAYER 1: Lower hull === */
-    fr(cx - 11, cy - 14, 22, 11, BB0);
-    vl(cx - 11, cy - 14, 9, BED);
-    vl(cx + 10, cy - 14, 9, BED);
-
-    /* === LAYER 2: Mid body === */
-    fr(cx - 10, cy - 24, 20, 11, BB0);
-    hl(cx - 7, cy - 23, 14, BED);
-    hl(cx - 7, cy - 21, 14, BED);
-    hl(cx - 7, cy - 19, 14, BED);
-
-    /* === LAYER 3: Upper hood === */
-    fr(cx - 8, cy - 32, 16, 9, BB1);
-
-    /* === LAYER 4: Nose tip (blunt slatted grill) === */
-    fr(cx - 5, cy - 38, 10, 7, BB1);
-    fr(cx - 3, cy - 42, 6, 5, BB2);
-    hl(cx - 3, cy - 41, 6, BED);
-    hl(cx - 3, cy - 39, 6, BED);
-
-    /* === LAYER 5: Cockpit canopy === */
-    fr(cx - 7, cy - 28, 14, 7, BCK);
-    fr(cx - 5, cy - 27, 10, 5, 0x0017u);
-    hl(cx - 7, cy - 28, 14, BED);
-    hl(cx - 7, cy - 22, 14, 0x3166u);
-
-    /* === LAYER 6: Bat-wing emblem === */
-    fr(cx - 1, cy - 19, 2, 4, BAC);
-    fr(cx - 8, cy - 18, 7, 2, BAC);
-    fr(cx + 1, cy - 18, 7, 2, BAC);
-
-    /* === LAYER 7: Headlights + Taillights === */
-    fr(cx - 6, cy - 41, 3, 2, Wh);
-    fr(cx + 3, cy - 41, 3, 2, Wh);
-    fr(cx - 12, cy - 6, 3, 2, Re);
-    fr(cx + 9, cy - 6, 3, 2, Re);
+  /* Shadow */
+  fillr(cx-20,cy+3,40,5,C_SHA);
+  /* Exhaust */
+  if(pl.boosting){int fh=8+((gm.fr>>1)&3);fillr(cx-5,cy+2,10,fh,C_O);fillr(cx-3,cy+3,6,fh-2,C_Y);}
+  else if(gm.fr&8){fillr(cx-3,cy+2,6,5,C_O);}
+  /* L0: Tail fins */
+  fillr(cx-24,cy-4,14,10,C_BB0);hline(cx-24,cy-4,14,C_BED);
+  fillr(cx+10,cy-4,14,10,C_BB0);hline(cx+10,cy-4,14,C_BED);
+  fillr(cx-9,cy-4,18,10,C_BB1);diamond(cx,cy+1,3,C_DK);
+  /* L1: Lower hull */
+  fillr(cx-11,cy-14,22,11,C_BB0);vline(cx-11,cy-14,9,C_BED);vline(cx+10,cy-14,9,C_BED);
+  /* L2: Mid body + slats */
+  fillr(cx-10,cy-24,20,11,C_BB0);
+  hline(cx-7,cy-23,14,C_BED);hline(cx-7,cy-21,14,C_BED);hline(cx-7,cy-19,14,C_BED);
+  /* L3: Upper hood */
+  fillr(cx-8,cy-32,16,9,C_BB1);
+  /* L4: Nose */
+  fillr(cx-5,cy-38,10,7,C_BB1);fillr(cx-3,cy-42,6,5,C_BB2);
+  hline(cx-3,cy-41,6,C_BED);hline(cx-3,cy-39,6,C_BED);
+  /* L5: Cockpit canopy */
+  fillr(cx-7,cy-28,14,7,C_BCK);fillr(cx-5,cy-27,10,5,0x0017u);
+  hline(cx-7,cy-28,14,C_BED);hline(cx-7,cy-22,14,0x3166u);
+  /* L6: Bat-wing emblem */
+  fillr(cx-1,cy-19,2,4,C_BAC);fillr(cx-8,cy-18,7,2,C_BAC);fillr(cx+1,cy-18,7,2,C_BAC);
+  /* L7: Headlights + taillights */
+  fillr(cx-6,cy-41,3,2,C_W);fillr(cx+3,cy-41,3,2,C_W);
+  fillr(cx-12,cy-6,3,2,C_R);fillr(cx+9,cy-6,3,2,C_R);
 }
 
 /* ================================================================
- * ENEMY — 5-layer depth-scaled sprite stack
- *
- * Layer 0: shadow
- * Layer 1: bumper/undercarriage (widest)
- * Layer 2: lower body + wheel arches
- * Layer 3: upper body + windshield glass
- * Layer 4: roof (narrower = wedge illusion)
- * + type-specific details (siren, stripe, exhaust)
+ * ENEMY CAR — positioned relative to ROAD center
  * ================================================================ */
-static void drawEnemy(const Enm *e) {
-    int z = FRFP(e->z_fp);
-    if (z < 60) z = 60;
-    int wz = FRFP(gm.cam_z) + z;
+static void draw_enemy(const Enm*e){
+  if(!e->active||e->wz<=0)return;
+  int sy=HOR+PROJ/e->wz;
+  if(sy<=HOR+2||sy>=SH)return;
+  int dy=sy-HOR;
+  int hw=(RHW*dy)/PROJ;
+  int cvoff=(gm.curve*dy*dy)/(PROJ*64);
+  int road_cx=SCX+cvoff;
+  /* Enemy screen X: offset from road centre */
+  int sx=road_cx+(e->x_fp*hw)/FP;
+  if(sx<-60||sx>SW+60)return;
 
-    int rcx, rhw, rum;
-    sample(wz, &rcx, &rhw, &rum);
+  int sc=(dy*100)/(SH-HOR);
+  int bw=imax(52*sc/100,4);int bh=imax(72*sc/100,4);
+  int bw2=bw/2;
 
-    int lwx = lanex(e->lane, rhw) + e->loff;
-    int ewx = rcx + lwx;
-
-    int sx = pjx(ewx - FRFP(pl.x_fp), z);
-    int sy = pjy(z);
-
-    if (sy <= HOR_Y + 1 || sy >= H + 20) return;
-    if (sx < -80 || sx > W + 80) return;
-
-    int bw = imx((EN_BW * CAM_D) / z, 4);
-    int bh = imx((EN_BH * CAM_D) / z, 4);
-    int ds = dshade(z);
-    int bw2 = bw / 2;
-
-    /* Colour by type */
-    unsigned short bc, rc, gc;
-    switch (e->type) {
-        case 0: bc = EN0; rc = sh(EN0, 230); gc = 0x4208u; break;
-        case 1: bc = EN1; rc = sh(EN1, 230); gc = 0x2104u; break;
-        case 2: bc = EN2; rc = sh(EN2, 230); gc = 0x2104u; break;
-        default: bc = EN3; rc = sh(EN3, 230); gc = 0x4208u; break;
-    }
-
-    /* L0: Shadow */
-    fr(sx - bw2 - 2, sy + 1, bw + 4, imx(bh / 6, 1), sh(K, 120));
-
-    /* L1: Bumper (full width) */
-    fr(sx - bw2, sy - bh / 4, bw, bh / 4, sh(bc, ds));
-    /* Wheel arches — dark rectangles at corners */
-    { int ww = imx(bw / 5, 1);
-      fr(sx - bw2, sy - bh / 4, ww, bh / 4, sh(K, ds));
-      fr(sx + bw2 - ww, sy - bh / 4, ww, bh / 4, sh(K, ds)); }
-
-    /* L2: Lower body */
-    fr(sx - bw2, sy - bh * 3 / 4, bw, bh / 2, sh(bc, ds));
-    /* Side panel highlight line */
-    hl(sx - bw2, sy - bh / 2, bw, sh(rc, ds));
-
-    /* L3: Windshield glass strip */
-    { int gw = bw * 3 / 4, gh = imx(bh / 7, 1);
-      fr(sx - gw / 2, sy - bh * 5 / 8, gw, gh, sh(gc, ds)); }
-
-    /* L4: Roof (narrower top — 3D wedge) */
-    { int rw = bw * 3 / 4, rh = imx(bh / 5, 1);
-      int ry = sy - bh - rh;
-      fr(sx - rw / 2, ry, rw, rh, sh(rc, ds));
-      hl(sx - rw / 2, ry, rw, sh(MG, ds)); }
-
-    /* Headlights */
-    if (bw > 4) {
-        fr(sx - bw2 + 1, sy - bh / 5, imx(bw / 5, 1), imx(bh / 8, 1), sh(Wh, ds));
-        fr(sx + bw2 - imx(bw / 5, 1) - 1, sy - bh / 5, imx(bw / 5, 1), imx(bh / 8, 1), sh(Wh, ds));
-    }
-
-    /* Type details */
-    switch (e->type) {
-        case 0: {
-            /* Police siren on roof */
-            int rw = bw * 3 / 4, rh = imx(bh / 5, 1);
-            int ry = sy - bh - rh;
-            int sw = imx(rw / 2, 2);
-            unsigned short sl = (gm.fr & 8) ? Re : Bl;
-            fr(sx - sw / 2, ry - imx(rh / 2, 1), sw / 2, imx(rh / 2, 1), sh(sl, ds));
-            fr(sx, ry - imx(rh / 2, 1), sw / 2, imx(rh / 2, 1), sh(sl == Re ? Bl : Re, ds));
-            /* Blue stripe across mid */
-            if (bw > 3) fr(sx - bw2, sy - bh * 5 / 8 - 1, bw, imx(bh / 10, 1), sh(Bl, ds));
-            break; }
-        case 1: {
-            /* Racing stripe down centre */
-            if (bh > 4) vl(sx, sy - bh * 3 / 4, bh * 3 / 4, sh(K, ds));
-            break; }
-        case 2: {
-            /* Exhaust pipes */
-            if (bw > 4) {
-                fr(sx - bw2, sy - bh / 8, imx(bw / 6, 1), imx(bh / 8, 1), sh(DG, ds));
-                fr(sx + bw2 - imx(bw / 6, 1), sy - bh / 8, imx(bw / 6, 1), imx(bh / 8, 1), sh(DG, ds));
-            }
-            break; }
-        default: break;
-    }
-
-    /* Taillight blink */
-    if ((gm.fr >> 3) & 1) {
-        fr(sx - bw2, sy - 2, imx(bw / 6, 1), 2, sh(Re, ds));
-        fr(sx + bw2 - imx(bw / 6, 1), sy - 2, imx(bw / 6, 1), 2, sh(Re, ds));
-    }
+  unsigned short bc,rc;
+  switch(e->type){
+    case 0:bc=C_W;rc=C_W;break;
+    case 1:bc=C_O;rc=0xFC40u;break;
+    case 2:bc=C_C;rc=0x06DFu;break;
+    default:bc=C_M;rc=0x7800u;break;
+  }
+  /* Shadow */
+  fillr(sx-bw2-2,sy,bw+4,imax(bh/5,1),C_SHA);
+  /* Bumper */
+  fillr(sx-bw2,sy-bh/4,bw,bh/4,bc);
+  {int ww=imax(bw/5,1);fillr(sx-bw2,sy-bh/4,ww,bh/4,C_K);fillr(sx+bw2-ww,sy-bh/4,ww,bh/4,C_K);}
+  /* Body */
+  fillr(sx-bw2,sy-bh*3/4,bw,bh/2,bc);hline(sx-bw2,sy-bh/2,bw,rc);
+  /* Glass */
+  {int gw=bw*3/4;int gh=imax(bh/7,1);fillr(sx-gw/2,sy-bh*5/8,gw,gh,C_DK);}
+  /* Roof */
+  {int rw=bw*3/4;int rh=imax(bh/5,1);int ry=sy-bh-rh;
+   fillr(sx-rw/2,ry,rw,rh,rc);hline(sx-rw/2,ry,rw,C_MG);}
+  /* Headlights */
+  if(bw>4){
+    fillr(sx-bw2+1,sy-bh/5,imax(bw/5,1),imax(bh/8,1),C_W);
+    fillr(sx+bw2-imax(bw/5,1)-1,sy-bh/5,imax(bw/5,1),imax(bh/8,1),C_W);}
+  /* Police siren */
+  if(e->type==0&&bw>6){
+    int rw2=bw*3/4;int rh2=imax(bh/5,1);int ry2=sy-bh-rh2;
+    int sw2=imax(rw2/2,2);unsigned short sl=(e->anim&8)?C_R:C_B;
+    fillr(sx-sw2/2,ry2-imax(rh2/2,1),sw2/2,imax(rh2/2,1),sl);
+    fillr(sx,ry2-imax(rh2/2,1),sw2/2,imax(rh2/2,1),sl==C_R?C_B:C_R);}
+  /* Taillights */
+  if((e->anim>>3)&1){fillr(sx-bw2,sy-2,imax(bw/6,1),2,C_R);
+    fillr(sx+bw2-imax(bw/6,1),sy-2,imax(bw/6,1),2,C_R);}
 }
 
 /* ================================================================
  * HUD
  * ================================================================ */
-static void drawHUD(void) {
-    /* Speed bar + HP — top-left */
-    fr(0, 0, 86, 44, sh(K, 180));
-    dr(0, 0, 86, 44, DG);
-    /* Speed bar */
-    fr(4, 4, 62, 8, sh(BLD_2, 200));
-    { int bar = ic((pl.spd_fp * 60) / BSTSPD, 0, 60);
-      unsigned short sc = pl.boost_t > 0 ? Or : Cy;
-      fr(5, 5, bar, 6, sc); }
-    dnum(68, 5, FRFP(pl.spd_fp), LG);
-    /* HP hearts */
-    for (int i = 0; i < 5; i++) {
-        unsigned short hc = i < pl.hp ? Gr : sh(DG, 120);
-        diam(8 + i * 12, 18, 4, hc);
-    }
-    /* Score */
-    dnum(4, 30, pl.score, Ye);
-
-    /* Speed dial — right side */
-    fr(W - 20, 0, 20, 50, sh(K, 180));
-    dr(W - 20, 0, 20, 50, DG);
-    { int spd = FRFP(pl.spd_fp);
-      int bh = ic(spd * 2, 0, 44);
-      fr(W - 16, 48 - bh, 12, bh, pl.boost_t > 0 ? Or : NEON_T); }
-
-    /* Boost indicator */
-    if (pl.boost_t > 0) {
-        int bw = (pl.boost_t * 60) / BSTDUR;
-        fr(4, 40, bw, 3, Or);
-    }
+static void draw_hud(void){
+  fillr(0,0,90,48,0x1082u);bordr(0,0,90,48,C_DK);
+  fillr(4,4,66,8,C_BD1);
+  {int mxv=pl.boosting?BSVL:MXVL;int bar=iclamp(pl.vel*64/mxv,0,64);
+   fillr(5,5,bar,6,pl.boosting?C_O:C_C);}
+  drawnum(72,5,pl.vel,C_LG);
+  for(int i=0;i<PLHP;i++){unsigned short hc=i<pl.hp?C_G:0x2104u;diamond(8+i*14,20,4,hc);}
+  drawnum(4,34,pl.score,C_Y);
+  if(pl.bst>0){int bw=(pl.bst*60)/BSDR;fillr(4,44,bw,3,C_O);}
+  fillr(SW-20,0,20,50,0x1082u);bordr(SW-20,0,20,50,C_DK);
+  {int bh=iclamp(pl.vel*44/MXVL,0,44);fillr(SW-16,48-bh,12,bh,pl.boosting?C_O:C_NT);}
 }
 
 /* ================================================================
- * OVERLAY SCREENS
+ * OVERLAYS
  * ================================================================ */
-static void dimHalf(void) {
-    int n = STRIDE * H;
-    for (int i = 0; i < n; i++) {
-        unsigned short p = fb[i];
-        fb[i] = (unsigned short)(((p >> 1) & 0x7800u) | ((p >> 1) & 0x03E0u) | ((p >> 1) & 0x000Fu));
-    }
+static void dim_fb(void){
+  int n=STR*SH;
+  for(int i=0;i<n;i++){unsigned short p=fb[i];
+    fb[i]=(unsigned short)(((p>>1)&0x7800u)|((p>>1)&0x03E0u)|((p>>1)&0x000Fu));}
 }
-
-static void drawMenu(void) {
-    clr(K);
-    /* Sky gradient */
-    for (int y = 0; y < H; y++) {
-        unsigned short sky;
-        if (y < 80) { int b = 3 + (y >> 3); int g = y >> 4; sky = (unsigned short)((g << 5) | b); }
-        else if (y < 160) { int b = 13 + ((y - 80) >> 4); int g = 5 + ((y - 80) >> 4); sky = (unsigned short)((g << 5) | b); }
-        else { int r = (y - 160) >> 3; int g = 3 + ((y - 160) >> 4); sky = (unsigned short)((r << 11) | (g << 5) | 8); }
-        hl(0, y, W, sky);
-    }
-
-    drawSky();
-    drawRain();
-
-    /* Gotham silhouette at bottom */
-    for (int b = 0; b < 12; b++) {
-        int bx = b * 27; int bh = 18 + (b * 7) % 28;
-        fr(bx, 68 - bh, 22, bh, BLD_3);
-        fr(bx + 2, 68 - bh - 3, 4, 4, BLD_3);
-        fr(bx + 15, 68 - bh - 3, 4, 4, BLD_3);
-    }
-
-    /* Batman silhouette */
-    fr(108, 48, 22, 32, DG); fr(190, 48, 22, 32, DG);  /* cape wings */
-    fr(128, 30, 64, 52, DG);
-    fr(140, 18, 12, 18, DG); fr(168, 18, 12, 18, DG);  /* ears */
-    fr(148, 42, 24, 22, 0x2945u); /* face */
-    fr(148, 60, 24, 5, Ye);       /* belt */
-    diam(160, 52, 7, Ye);         /* emblem */
-
-    /* Title banner */
-    fr(54, 88, 212, 30, Ye);
-    fr(56, 90, 208, 26, K);
-    int tx = 64; unsigned short tc = Ye;
-    /* B */ fr(tx,92,4,22,tc); fr(tx+4,92,8,6,tc); fr(tx+4,100,8,6,tc); fr(tx+4,108,8,7,tc); tx += 16;
-    /* A */ fr(tx,96,4,18,tc); fr(tx+8,96,4,18,tc); fr(tx+4,92,4,5,tc); fr(tx+4,101,4,4,tc); tx += 16;
-    /* T */ fr(tx,92,20,6,tc); fr(tx+8,92,4,22,tc); tx += 22;
-    /* M */ fr(tx,92,4,22,tc); fr(tx+14,92,4,22,tc); fr(tx+4,94,5,7,tc); fr(tx+9,94,5,7,tc); tx += 20;
-    /* A */ fr(tx,96,4,18,tc); fr(tx+8,96,4,18,tc); fr(tx+4,92,4,5,tc); fr(tx+4,101,4,4,tc); tx += 16;
-    /* N */ fr(tx,92,4,22,tc); fr(tx+14,92,4,22,tc); fr(tx+4,94,6,5,tc); fr(tx+9,100,6,5,tc);
-
-    /* Subtitle */
-    fr(88, 122, 144, 10, Cy); fr(90, 123, 140, 8, K);
-    for (int i = 0; i < 9; i++) fr(92 + i * 14, 125, 10, 4, Cy);
-
-    /* Controls */
-    fr(60, 136, 200, 1, MG);
-    fr(80, 142, 16, 8, DG); dr(80, 142, 16, 8, LG);  /* W */
-    fr(60, 142, 16, 8, DG); dr(60, 142, 16, 8, LG);  /* A */
-    fr(100, 142, 16, 8, DG); dr(100, 142, 16, 8, LG); /* S */
-    fr(120, 142, 16, 8, DG); dr(120, 142, 16, 8, LG); /* D */
-    fr(150, 142, 38, 8, DG); dr(150, 142, 38, 8, LG); /* SHIFT */
-
-    /* Blink prompt */
-    unsigned short bc = (gm.fr & 32) ? Ye : Or;
-    fr(78, 160, 164, 16, bc);
-    fr(80, 162, 160, 12, K);
-    /* "PRESS ENTER" approximation */
-    for (int i = 0; i < 6; i++) fr(86 + i * 24, 165, 20, 6, bc);
-
-    fr(60, 180, 200, 1, MG);
-    diam(128, 196, 4, Ye);
-    dnum(138, 192, pl.score, Ye);
+static void draw_menu(void){
+  clrfb(C_K);
+  for(int y=0;y<SH;y++){unsigned short sky;
+    if(y<80){int b=3+(y>>3);sky=(unsigned short)((y/16<<5)|b);}
+    else if(y<160){int b=13+((y-80)>>4);int g=5+((y-80)>>4);sky=(unsigned short)((g<<5)|b);}
+    else{int r=(y-160)>>3;int g=3+((y-160)>>4);sky=(unsigned short)((r<<11)|(g<<5)|8);}
+    hline(0,y,SW,sky);}
+  draw_sky();draw_rain();
+  for(int b=0;b<12;b++){int bx=b*27;int bh=18+(b*7)%28;
+    fillr(bx,68-bh,22,bh,C_BD3);fillr(bx+2,68-bh-3,4,4,C_BD3);fillr(bx+15,68-bh-3,4,4,C_BD3);}
+  fillr(108,48,22,32,C_DK);fillr(190,48,22,32,C_DK);fillr(128,30,64,52,C_DK);
+  fillr(140,18,12,18,C_DK);fillr(168,18,12,18,C_DK);fillr(148,42,24,22,0x2945u);
+  fillr(148,60,24,5,C_Y);diamond(160,52,7,C_Y);
+  fillr(54,88,212,30,C_Y);fillr(56,90,208,26,C_K);
+  int tx=64;
+  fillr(tx,92,4,22,C_Y);fillr(tx+4,92,8,6,C_Y);fillr(tx+4,100,8,6,C_Y);fillr(tx+4,108,8,7,C_Y);tx+=16;
+  fillr(tx,96,4,18,C_Y);fillr(tx+8,96,4,18,C_Y);fillr(tx+4,92,4,5,C_Y);fillr(tx+4,101,4,4,C_Y);tx+=16;
+  fillr(tx,92,20,6,C_Y);fillr(tx+8,92,4,22,C_Y);tx+=22;
+  fillr(tx,92,4,22,C_Y);fillr(tx+14,92,4,22,C_Y);fillr(tx+4,94,5,7,C_Y);fillr(tx+9,94,5,7,C_Y);tx+=20;
+  fillr(tx,96,4,18,C_Y);fillr(tx+8,96,4,18,C_Y);fillr(tx+4,92,4,5,C_Y);fillr(tx+4,101,4,4,C_Y);tx+=16;
+  fillr(tx,92,4,22,C_Y);fillr(tx+14,92,4,22,C_Y);fillr(tx+4,94,6,5,C_Y);fillr(tx+9,100,6,5,C_Y);
+  fillr(80,122,160,10,C_C);fillr(82,123,156,8,C_K);
+  for(int i=0;i<8;i++)fillr(84+i*18,125,14,4,C_C);
+  unsigned short bc=(gm.fr&32)?C_Y:C_O;
+  fillr(78,160,164,16,bc);fillr(80,162,160,12,C_K);
+  for(int i=0;i<6;i++)fillr(86+i*24,165,20,6,bc);
+  drawnum(138,192,pl.score,C_Y);
 }
-
-static void drawPause(void) {
-    dimHalf();
-    fr(80, 90, 160, 60, DG); dr(80, 90, 160, 60, Ye);
-    /* "PAUSED" bars */
-    fr(120, 108, 12, 22, Ye);
-    fr(148, 108, 12, 22, Ye);
-    fr(100, 136, 120, 7, MG);
-}
-
-static void drawGameover(void) {
-    dimHalf();
-    fr(50, 70, 220, 110, K); dr(50, 70, 220, 110, Re);
-    fr(70, 85, 180, 7, Re);        /* "GAME OVER" bar */
-    dnum(120, 103, pl.score, Ye);
-    dnum(120, 120, gm.lap, Cy);    /* laps */
-    /* Blink prompt */
-    if (gm.fr & 32) fr(90, 152, 140, 6, Wh);
-}
+static void draw_pause(void){dim_fb();
+  fillr(80,90,160,60,C_DK);bordr(80,90,160,60,C_Y);
+  fillr(120,108,12,22,C_Y);fillr(148,108,12,22,C_Y);fillr(100,136,120,7,C_MG);}
+static void draw_gameover(void){dim_fb();
+  fillr(50,70,220,100,C_K);bordr(50,70,220,100,C_R);fillr(70,85,180,7,C_R);
+  drawnum(120,103,pl.score,C_Y);if(gm.fr&32)fillr(90,148,140,6,C_W);}
 
 /* ================================================================
- * SPAWN
+ * SPAWN / INIT
  * ================================================================ */
-static void spawn(void) {
-    for (int i = 0; i < NEMAX; i++) {
-        if (en[i].active) continue;
-        int si = segidx(FRFP(gm.cam_z));
-        int hw = road[si].width;
-        en[i].active = true;
-        en[i].lane = ir(0, NLANES - 1);
-        en[i].loff = ir(-hw / 16, hw / 16);
-        en[i].z_fp = ESPAWN_Z + TOFP(ir(0, 1200));
-        en[i].spd_fp = TOFP(ir(8, 16));
-        en[i].type = ir(0, 3);
-        return;
-    }
+static void spawn_enemy(void){
+  int lanes_fp[3]={-170,0,170};
+  for(int i=0;i<NEMAX;i++){
+    if(en[i].active)continue;
+    en[i].active=true;
+    en[i].x_fp=lanes_fp[irand(0,2)]+irand(-20,20);
+    en[i].wz=SPWNZ+irand(0,60);
+    en[i].spd=1+irand(0,2);
+    en[i].type=irand(0,3);
+    en[i].anim=0;
+    return;
+  }
 }
-
-/* ================================================================
- * GAME INIT
- * ================================================================ */
-static void ginit(void) {
-    pl.x_fp = 0; pl.steer_fp = 0; pl.spd_fp = 0;
-    pl.boost_t = 0; pl.hp = 5; pl.score = 0;
-    pl.invuln = 0; pl.alive = true;
-    for (int i = 0; i < NEMAX; i++) en[i].active = false;
-    gm.cam_z = 0; gm.lap = 0; gm.spawn_cd = 24;
-    gm.flash = false;
+static void game_init(void){
+  pl.x_fp=0;pl.stv=0;pl.vel=0;pl.hp=PLHP;pl.score=0;
+  pl.invuln=0;pl.bst=0;pl.alive=true;pl.boosting=false;
+  for(int i=0;i<NEMAX;i++)en[i].active=false;
+  gm.scroll=0;gm.fr=0;gm.curve=0;gm.curve_t=0;gm.spawn_t=SPWNT;
 }
 
 /* ================================================================
  * PHYSICS
  * ================================================================ */
-static void updatePhysics(void) {
-    if (!pl.alive) return;
-
-    int mx = pl.boost_t > 0 ? BSTSPD : MAXSPD;
-
-    if (kU) {
-        int a = pl.boost_t > 0 ? BSTACC : ACC_FP;
-        pl.spd_fp += a;
-    } else if (kD) {
-        pl.spd_fp -= pl.spd_fp > 0 ? BRK_FP : RVACC;
-    } else {
-        if (pl.spd_fp > 0) { pl.spd_fp -= DRAG; if (pl.spd_fp < 0) pl.spd_fp = 0; }
-        else if (pl.spd_fp < 0) { pl.spd_fp += DRAG; if (pl.spd_fp > 0) pl.spd_fp = 0; }
-    }
-
-    if (kSh && pl.boost_t <= 0 && pl.spd_fp > TOFP(8)) pl.boost_t = BSTDUR;
-    if (pl.boost_t > 0) {
-        pl.boost_t--;
-        if (pl.spd_fp < TOFP(12)) pl.spd_fp = TOFP(12);
-    }
-    pl.spd_fp = ic(pl.spd_fp, -MAXREV, mx);
-
-    if (kL) pl.steer_fp -= SACC;
-    if (kR) pl.steer_fp += SACC;
-    pl.steer_fp = (pl.steer_fp * SDAMP_N) / SDAMP_D;
-    pl.steer_fp = ic(pl.steer_fp, -SMAX, SMAX);
-    pl.x_fp += pl.steer_fp;
-
-    /* Centrifugal push from road curve */
-    { int si = segidx(FRFP(gm.cam_z));
-      pl.x_fp += road[si].curve * FRFP(pl.spd_fp) / 64; }
-
-    /* Clamp to road */
-    { int si = segidx(FRFP(gm.cam_z));
-      int hw = road[si].width;
-      int lim = TOFP(hw - EDGE_M);
-      if (pl.x_fp > lim) { pl.x_fp = lim; if (pl.steer_fp > 0) pl.steer_fp = 0; }
-      if (pl.x_fp < -lim) { pl.x_fp = -lim; if (pl.steer_fp < 0) pl.steer_fp = 0; }
-    }
-
-    gm.cam_z += pl.spd_fp;
-    if (gm.cam_z < 0) gm.cam_z += TOFP(TRACKLEN);
-    if (gm.cam_z >= TOFP(TRACKLEN)) { gm.cam_z -= TOFP(TRACKLEN); gm.lap++; }
-
-    if (pl.invuln > 0) pl.invuln--;
-    if (pl.spd_fp > 0) pl.score += FRFP(pl.spd_fp) / 7;
+static void update_physics(void){
+  if(!pl.alive)return;
+  int maxv=pl.boosting?BSVL:MXVL;
+  /* Acceleration/braking */
+  if(kU){pl.vel+=ACCL;if(pl.vel>maxv)pl.vel=maxv;}
+  else if(kD){pl.vel-=BRKF;if(pl.vel<0)pl.vel=0;}
+  else{pl.vel-=FRIC;if(pl.vel<0)pl.vel=0;}
+  /* Off-road slow */
+  if(iabs(pl.x_fp)>FP&&pl.vel>20)pl.vel-=3;
+  /* Boost */
+  if(kSh&&!pl.boosting&&pl.vel>40){pl.boosting=true;pl.bst=BSDR;pl.vel=imax(pl.vel,80);}
+  if(pl.boosting){pl.bst--;if(pl.bst<=0)pl.boosting=false;}
+  /* Steering — directly changes playerX (proportional to speed) */
+  if(kL)pl.stv-=STRF;
+  if(kR)pl.stv+=STRF;
+  if(!kL&&!kR)pl.stv=(pl.stv*3)/4;  /* drag to centre */
+  /* Centrifugal push from road curve */
+  pl.stv-=gm.curve>>4;
+  pl.stv=iclamp(pl.stv,-MXST,MXST);
+  /* Apply steer — scaled by speed */
+  int speedFrac=pl.vel*FP/MXVL;
+  pl.x_fp+=(pl.stv*speedFrac)/FP;
+  /* Clamp */
+  pl.x_fp=iclamp(pl.x_fp,-FP*3/2,FP*3/2);
+  if(iabs(pl.x_fp)>=FP*3/2-5)pl.stv=0;
+  /* Scroll road (speed-proportional) */
+  gm.scroll+=pl.vel>>3;
+  if(pl.invuln>0)pl.invuln--;
+  if(gm.fr%15==0&&pl.vel>20)pl.score++;
 }
 
 /* ================================================================
  * WORLD UPDATE
  * ================================================================ */
-static void updateWorld(void) {
-    if (--gm.spawn_cd <= 0) { spawn(); gm.spawn_cd = ir(SPAWN_LO, SPAWN_HI); }
-
-    int sfp = pl.spd_fp;
-
-    for (int i = 0; i < NEMAX; i++) {
-        Enm *e = &en[i]; if (!e->active) continue;
-        e->z_fp -= sfp;
-        e->z_fp -= e->spd_fp / 4;
-        if (e->z_fp < EDESPAWN) { e->active = false; continue; }
-
-        /* Collision */
-        int si = segidx(FRFP(gm.cam_z) + FRFP(e->z_fp));
-        int hw = road[si].width;
-        int lwx = lanex(e->lane, hw) + e->loff;
-        int dx = lwx - FRFP(pl.x_fp);
-        if (e->z_fp < COLL_ZW && e->z_fp > TOFP(20) && ia(dx) < COLL_XW && pl.invuln <= 0 && pl.alive) {
-            e->active = false;
-            pl.hp--;
-            pl.spd_fp /= 2;
-            pl.invuln = 90;
-            gm.flash = true;
-            if (pl.hp <= 0) { pl.hp = 0; pl.alive = false; gm.st = ST_OVER; kEnt = false; }
-        }
-
-        /* Keep in road */
-        { int el = hw - EDGE_M;
-          if (lwx > el) e->loff -= 8;
-          if (lwx < -el) e->loff += 8; }
+static void update_world(void){
+  int spd=pl.vel>>3;
+  /* Curve animation */
+  gm.curve_t++;
+  int target=(isin((gm.curve_t>>3)&0xFF)*36)>>8;
+  gm.curve+=(target-gm.curve)>>4;
+  /* Enemies */
+  for(int i=0;i<NEMAX;i++){
+    Enm*e=&en[i];
+    if(!e->active)continue;
+    e->wz-=spd+e->spd;
+    e->anim++;
+    if(e->wz<-10){e->active=false;continue;}
+    /* Collision */
+    if(e->wz<=COLLZ&&e->wz>=-5){
+      int dx_fp=iabs(e->x_fp-pl.x_fp);
+      if(dx_fp<COLLX&&pl.invuln<=0&&pl.alive){
+        pl.hp--;pl.invuln=INVT;pl.vel/=2;
+        if(pl.hp<=0){pl.alive=false;gm.st=ST_OVER;}
+        e->active=false;
+      }
     }
-
-    gm.flash = false;
+  }
+  /* Spawning */
+  if(--gm.spawn_t<=0){
+    gm.spawn_t=imax(SPWNT-gm.fr/200,40);
+    spawn_enemy();
+  }
 }
 
 /* ================================================================
  * RENDER SCENE
  * ================================================================ */
-static void renderScene(void) {
-    clr(K);
-    drawSky();
-    drawSkyline();
-    drawRoad();
-    drawLamps();
-    drawRain();
-
-    /* Z-sort enemies: draw far first */
-    int ord[NEMAX], cnt = 0;
-    for (int i = 0; i < NEMAX; i++) if (en[i].active) ord[cnt++] = i;
-    for (int i = 0; i < cnt - 1; i++)
-        for (int j = i + 1; j < cnt; j++)
-            if (en[ord[i]].z_fp < en[ord[j]].z_fp)
-                { int t = ord[i]; ord[i] = ord[j]; ord[j] = t; }
-    for (int i = 0; i < cnt; i++) drawEnemy(&en[ord[i]]);
-
-    drawPlayer();
-    drawHUD();
-
-    if (gm.st == ST_PAUSE) drawPause();
-    if (gm.st == ST_OVER) drawGameover();
-
-    /* Crash flash overlay */
-    if (gm.flash) {
-        for (int y = 0; y < H; y += 2) hl(0, y, W, sh(Re, 80));
-    }
-
-    blit();
+static void render_scene(void){
+  clrfb(C_K);
+  draw_sky();
+  draw_buildings();
+  draw_road();
+  draw_lamps();
+  draw_rain();
+  /* Enemies: sort far-to-near, then draw */
+  int idx[NEMAX];int cnt=0;
+  for(int i=0;i<NEMAX;i++)if(en[i].active)idx[cnt++]=i;
+  for(int i=0;i<cnt-1;i++)
+    for(int j=i+1;j<cnt;j++)
+      if(en[idx[i]].wz<en[idx[j]].wz){int t=idx[i];idx[i]=idx[j];idx[j]=t;}
+  for(int i=0;i<cnt;i++)draw_enemy(&en[idx[i]]);
+  draw_batmobile();
+  draw_hud();
+  if(gm.st==ST_PAUSE)draw_pause();
+  if(gm.st==ST_OVER)draw_gameover();
+  blit();
 }
 
 /* ================================================================
  * MAIN
  * ================================================================ */
-int main(void) {
-    vinit();
-    tinit();
-    buildTrack();
+int main(void){
+  hw_init();tmr_init();
+  gm.st=ST_MENU;gm.fr=0;game_init();
+  kU=kD=kL=kR=kSh=kEnt=kEsc=false;
 
-    gm.st = ST_MENU;
-    gm.fr = 0;
-    ginit();
-    kU = kD = kL = kR = kSh = kEnt = kEsc = false;
-
-    while (1) {
-        twait();
-        gm.fr++;
-        input();
-
-        switch (gm.st) {
-            case ST_MENU:
-                if (kEnt) { ginit(); gm.st = ST_PLAY; kEnt = false; }
-                drawMenu();
-                blit();
-                break;
-
-            case ST_PLAY:
-                if (kEsc) { gm.st = ST_PAUSE; kEsc = false; }
-                else { updatePhysics(); updateWorld(); }
-                renderScene();
-                break;
-
-            case ST_PAUSE:
-                if (kEsc || kEnt) { gm.st = ST_PLAY; kEsc = kEnt = false; }
-                renderScene();
-                break;
-
-            case ST_OVER:
-                if (kEnt) { gm.st = ST_MENU; kEnt = false; }
-                renderScene();
-                break;
-        }
+  while(1){
+    tmr_wait();gm.fr++;poll_input();
+    switch(gm.st){
+      case ST_MENU:
+        if(kEnt){game_init();gm.st=ST_PLAY;kEnt=false;}
+        draw_menu();blit();break;
+      case ST_PLAY:
+        if(kEsc){gm.st=ST_PAUSE;kEsc=false;}
+        else{update_physics();update_world();}
+        render_scene();break;
+      case ST_PAUSE:
+        if(kEsc||kEnt){gm.st=ST_PLAY;kEsc=kEnt=false;}
+        render_scene();break;
+      case ST_OVER:
+        if(kEnt){gm.st=ST_MENU;kEnt=false;}
+        render_scene();break;
     }
-    return 0;
+  }
+  return 0;
 }
-
 /*
- * ================================================================
- * COMPILE & RUN (CPUlator):
- *   1. Open https://cpulator.01xz.net/?sys=arm-de1soc
- *   2. Paste entire file into C editor
- *   3. Compile and Load
- *   4. Continue (F5)
- *   5. Click inside page for keyboard focus
- *   6. ENTER to start
- *
- * CONTROLS:
- *   W / ↑      Accelerate
- *   S / ↓      Brake / Reverse
- *   A / ←      Steer left
- *   D / →      Steer right
- *   L-SHIFT    Boost
- *   ESC        Pause / Resume
- *   ENTER      Start / Confirm
- * ================================================================
+ * CPUlator: https://cpulator.01xz.net/?sys=arm-de1soc
+ * Paste -> Compile and Load -> Continue -> ENTER
+ * W/Up=Accel S/Down=Brake A/Left=Steer D/Right=Steer SHIFT=Boost ESC=Pause
  */
