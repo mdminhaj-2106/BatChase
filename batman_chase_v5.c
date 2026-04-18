@@ -1,23 +1,11 @@
-/*
- * batman_chase_v5.c — Batman: Gotham Chase
- * DE1-SoC / CPUlator pseudo-3D racer
- *
- * KEY FIX: Car moves on screen. Road stays centered.
- *   - Road center = SCX + curve offset (no player shift)
- *   - Car drawn at SCX + playerX * road_hw / FP
- *   - Enemies drawn relative to road center
- *   - Z-sorted far-to-near (no flicker)
- *   - Road stripe scroll tied to speed
- *   - Software FB + single blit = zero flicker
- *
- * W/Up=accel S/Down=brake A/Left=steer left D/Right=steer right
- * SHIFT=boost ENTER=start ESC=pause
- */
+
 #include <stdbool.h>
 
 /* Hardware */
+/* Hardware Mapping */
 #define PIXCTRL 0xFF203020u
-#define PIXBUF  0xC8000000u
+#define BUF_A   0xC8000000u  /* Front Buffer */
+#define BUF_B   0xC0000000u  /* Back Buffer (mapped to different SRAM/SDRAM area) */
 #define PS2ADR  0xFF200100u
 #define TMRADR  0xFF202000u
 
@@ -30,7 +18,7 @@
 /* Projection — proven from v3/v4 */
 #define HOR   76
 #define PROJ  512
-#define RHW   400
+#define RHW   800  /* WIDER ROAD */
 
 /* Player — FP=256, playerX range -256..+256 = -1.0..+1.0 */
 #define FP   256
@@ -39,16 +27,16 @@
 #define ACCL 4
 #define BRKF 10
 #define FRIC 1
-#define STRF 8
-#define MXST 28
+#define STRF 10    /* Slightly more responsive for wider road */
+#define MXST 32
 #define BSDR 150
 
 /* Gameplay */
 #define NEMAX  12
-#define SPWNZ  260
-#define SPWNT  70
-#define COLLZ  8
-#define COLLX  55
+#define SPWNZ  180  /* Closer spawn for visibility */
+#define SPWNT  60
+#define COLLZ  10   /* Adjusted for closer perspective */
+#define COLLX  80   /* Adjusted for wider road scaling */
 #define PLHP   5
 #define INVT   90
 
@@ -111,14 +99,14 @@ typedef struct{
 typedef enum{ST_MENU,ST_PLAY,ST_PAUSE,ST_OVER}GSt;
 typedef struct{
   GSt st;
-  int fr, scroll, curve, curve_t, spawn_t;
+  int fr, scroll, curve, curve_t, spawn_t, flash_t;
 } Gm;
 
 /* Globals */
 static volatile unsigned int*const g_ps2=(volatile unsigned int*)PS2ADR;
 static volatile unsigned int*const g_tmr=(volatile unsigned int*)TMRADR;
 static volatile unsigned int*const g_pbc=(volatile unsigned int*)PIXCTRL;
-static unsigned short fb[SH*STR];
+static unsigned short *draw_ptr = (unsigned short*)BUF_B;
 static Plr pl;
 static Enm en[NEMAX];
 static Gm gm;
@@ -135,9 +123,8 @@ static int irand(int lo,int hi){
   return lo+(int)(rng&0x7FFFu)%(hi-lo+1);
 }
 
-/* Framebuffer primitives */
 static inline void putpx(int x,int y,unsigned short c){
-  if((unsigned)x<SW&&(unsigned)y<(unsigned)SH)fb[y*STR+x]=c;
+  if((unsigned)x<SW&&(unsigned)y<(unsigned)SH) draw_ptr[y*STR+x]=c;
 }
 static void hline(int x,int y,int l,unsigned short c){
   if((unsigned)y>=SH||l<=0)return;
@@ -145,7 +132,7 @@ static void hline(int x,int y,int l,unsigned short c){
   if(x1<0||x0>=SW)return;
   if(x0<0)x0=0;
   if(x1>=SW)x1=SW-1;
-  for(int i=x0;i<=x1;i++)fb[y*STR+i]=c;
+  for(int i=x0;i<=x1;i++) draw_ptr[y*STR+i]=c;
 }
 static void fillr(int x,int y,int w,int h,unsigned short c){
   if(w<=0||h<=0)return;
@@ -157,7 +144,7 @@ static void fillr(int x,int y,int w,int h,unsigned short c){
   if(y1>SH)y1=SH;
   for(int j=y0;j<y1;j++)
     for(int i=x0;i<x1;i++)
-      fb[j*STR+i]=c;
+      draw_ptr[j*STR+i]=c;
 }
 static void bordr(int x,int y,int w,int h,unsigned short c){
   hline(x,y,w,c);hline(x,y+h-1,w,c);
@@ -171,7 +158,7 @@ static void diamond(int cx,int cy,int r,unsigned short c){
 }
 static void clrfb(unsigned short c){
   unsigned int pk=((unsigned int)c<<16)|c;
-  unsigned int*p=(unsigned int*)fb;
+  unsigned int*p=(unsigned int*)draw_ptr;
   int n=(STR*SH)>>1;
   for(int i=0;i<n;i++)p[i]=pk;
 }
@@ -201,13 +188,22 @@ static void drawnum(int x,int y,int n,unsigned short c){
 }
 
 /* Hardware */
-static void blit(void){
-  volatile unsigned int*d=(volatile unsigned int*)PIXBUF;
-  unsigned int*s=(unsigned int*)fb;
-  int n=(STR*SH)>>1;
-  for(int i=0;i<n;i++)d[i]=s[i];
+/* Hardware Rendering & Double Buffering */
+static void wait_vsync(void){
+  g_pbc[0] = 1; /* Request Swap */
+  while(g_pbc[3] & 1); /* Wait for S (Status bit 0) to be 0 (Vsync done) */
+  /* Update our draw pointer to the NEW back buffer */
+  draw_ptr = (unsigned short*)g_pbc[1]; /* Read current front buffer address from register */
 }
-static void hw_init(void){g_pbc[1]=PIXBUF;clrfb(0);blit();}
+
+static void hw_init(void){
+  g_pbc[1] = BUF_A; /* Front */
+  g_pbc[0] = 1;
+  while(g_pbc[3] & 1);
+  g_pbc[1] = BUF_B; /* Back */
+  draw_ptr = (unsigned short*)BUF_B;
+  clrfb(0);
+}
 static void tmr_init(void){g_tmr[2]=0xB4B3u;g_tmr[3]=0x000Cu;g_tmr[1]=0x0006u;}
 static void tmr_wait(void){while(!(g_tmr[0]&1u));g_tmr[0]=0;}
 
@@ -304,12 +300,7 @@ static void draw_buildings(void){
      fillr(bx2+3,by+3,bw-6,5,C_K);
      for(int si=0;si<(bw-8)/4;si++)fillr(bx2+4+si*4,by+4,2,3,nc);}}
 }
-static void draw_rain(void){
-  for(int i=0;i<60;i++){
-    int rx=(i*73+gm.fr*2)%SW;int ry=(i*53+gm.fr*5)%SH;
-    putpx(rx,ry,0x4C99u);putpx(rx,ry+1,0x4C99u);
-  }
-}
+/* Removed Rain for clarity */
 
 /* ================================================================
  * ROAD — scanline renderer
@@ -389,6 +380,12 @@ static void draw_lamps(void){
  * car_sx = road_center + playerX * road_hw_at_bottom / FP
  * This is the KEY difference: the car slides across the road.
  * ================================================================ */
+/* ================================================================
+ * BATMOBILE — TRUE SPRITE STACKING (Volumetric)
+ *
+ * Each layer is drawn with an X-offset based on steering tilt.
+ * This creates a 3D rotation effect.
+ * ================================================================ */
 static void draw_batmobile(void){
   if(!pl.alive)return;
   if(pl.invuln>0&&(gm.fr&3))return;
@@ -398,43 +395,90 @@ static void draw_batmobile(void){
   int cvoff=(gm.curve*dy_bot*dy_bot)/(PROJ*64);
   int road_cx=SCX+cvoff;
 
-  /* CAR position = road centre + player offset */
   int cx=road_cx+(pl.x_fp*hw_bot)/FP;
-  /* Add visual lean from steering input */
-  cx+=iclamp(pl.stv*2,-12,12);
   int cy=SH-38;
+  
+  /* Tilt factor: steering intensity creates horizontal offset between layers */
+  int tilt = pl.stv; /* -32 to +32 */
 
-  /* Shadow */
-  fillr(cx-20,cy+3,40,5,C_SHA);
-  /* Exhaust */
-  if(pl.boosting){int fh=8+((gm.fr>>1)&3);fillr(cx-5,cy+2,10,fh,C_O);fillr(cx-3,cy+3,6,fh-2,C_Y);}
-  else if(gm.fr&8){fillr(cx-3,cy+2,6,5,C_O);}
-  /* L0: Tail fins */
-  fillr(cx-24,cy-4,14,10,C_BB0);hline(cx-24,cy-4,14,C_BED);
-  fillr(cx+10,cy-4,14,10,C_BB0);hline(cx+10,cy-4,14,C_BED);
-  fillr(cx-9,cy-4,18,10,C_BB1);diamond(cx,cy+1,3,C_DK);
-  /* L1: Lower hull */
-  fillr(cx-11,cy-14,22,11,C_BB0);vline(cx-11,cy-14,9,C_BED);vline(cx+10,cy-14,9,C_BED);
-  /* L2: Mid body + slats */
-  fillr(cx-10,cy-24,20,11,C_BB0);
-  hline(cx-7,cy-23,14,C_BED);hline(cx-7,cy-21,14,C_BED);hline(cx-7,cy-19,14,C_BED);
-  /* L3: Upper hood */
-  fillr(cx-8,cy-32,16,9,C_BB1);
-  /* L4: Nose */
-  fillr(cx-5,cy-38,10,7,C_BB1);fillr(cx-3,cy-42,6,5,C_BB2);
-  hline(cx-3,cy-41,6,C_BED);hline(cx-3,cy-39,6,C_BED);
-  /* L5: Cockpit canopy */
-  fillr(cx-7,cy-28,14,7,C_BCK);fillr(cx-5,cy-27,10,5,0x0017u);
-  hline(cx-7,cy-28,14,C_BED);hline(cx-7,cy-22,14,0x3166u);
-  /* L6: Bat-wing emblem */
-  fillr(cx-1,cy-19,2,4,C_BAC);fillr(cx-8,cy-18,7,2,C_BAC);fillr(cx+1,cy-18,7,2,C_BAC);
-  /* L7: Headlights + taillights */
-  fillr(cx-6,cy-41,3,2,C_W);fillr(cx+3,cy-41,3,2,C_W);
-  fillr(cx-12,cy-6,3,2,C_R);fillr(cx+9,cy-6,3,2,C_R);
+  /* Layer 0: Shadow */
+  fillr(cx-25,cy+5,50,6,C_SHA);
+
+  /* Engine Flame / Exhaust */
+  if(pl.boosting){
+    int fh=10+((gm.fr>>1)&3);
+    for(int i=0; i<4; i++) diamond(cx, cy+4+i, 4-i, (i&1)?C_O:C_Y);
+  }
+
+  /* Sprite Stacking: Lower to Upper slices */
+  
+  /* Base Chassis (Layers 1-3) */
+  for(int i=0; i<4; i++) {
+    int lx = cx + (i * tilt / 12);
+    int ly = cy - i;
+    int bw = 46 - i;
+    fillr(lx-bw/2, ly, bw, 2, C_BB0);
+    hline(lx-bw/2, ly, bw, C_BED);
+  }
+
+  /* Mid Body / Engine Intake (Layers 4-8) */
+  for(int i=4; i<9; i++) {
+    int lx = cx + (i * tilt / 12);
+    int ly = cy - i;
+    int bw = 40 - (i-4)*2;
+    fillr(lx-bw/2, ly, bw, 2, C_BB1);
+    /* Slats on side */
+    putpx(lx-bw/2, ly, C_DK); putpx(lx+bw/2-1, ly, C_DK);
+  }
+
+  /* Front Turbine Detail (Layer 9-11) */
+  for(int i=9; i<12; i++) {
+    int lx = cx + (i * tilt / 12);
+    int ly = cy - 20 - (i-9);
+    diamond(lx, ly, 4, C_K);
+    diamond(lx, ly, 2, 0x3186u);
+  }
+
+  /* Cockpit / Canopy (Layers 10-16) */
+  for(int i=10; i<17; i++) {
+    int lx = cx + (i * tilt / 10); /* More tilt at top */
+    int ly = cy - 8 - i;
+    int cw = 20 - (i-10)*2;
+    if(cw<4) cw=4;
+    fillr(lx-cw/2, ly, cw, 2, C_BCK);
+    hline(lx-cw/2, ly, cw, C_BED);
+  }
+
+  /* Iconic Rear Fins (Tallest Layers) */
+  for(int i=0; i<15; i++) {
+    int lx = cx + ( (i+5) * tilt / 12);
+    int ly = cy - 5 - i;
+    /* Left Fin */
+    fillr(lx-24+(i/2), ly, 5, 1, C_BB0);
+    /* Right Fin */
+    fillr(lx+19-(i/2), ly, 5, 1, C_BB0);
+    /* Wing edge */
+    putpx(lx-24+(i/2), ly, C_BED);
+    putpx(lx+23-(i/2), ly, C_BED);
+  }
+
+  /* Bat Emblem on hood */
+  int ex = cx + (6 * tilt / 12);
+  int ey = cy - 14;
+  fillr(ex-6, ey, 12, 1, C_BAC);
+  fillr(ex-2, ey-2, 4, 3, C_BAC);
+
+  /* Lights */
+  int lx_l = cx + (15 * tilt / 12);
+  int ly_l = cy - 35;
+  putpx(lx_l-4, ly_l, C_W); putpx(lx_l+3, ly_l, C_W);
 }
 
 /* ================================================================
  * ENEMY CAR — positioned relative to ROAD center
+ * ================================================================ */
+/* ================================================================
+ * ENEMY CAR — VOLUMETRIC SPRITE STACKING
  * ================================================================ */
 static void draw_enemy(const Enm*e){
   if(!e->active||e->wz<=0)return;
@@ -444,14 +488,12 @@ static void draw_enemy(const Enm*e){
   int hw=(RHW*dy)/PROJ;
   int cvoff=(gm.curve*dy*dy)/(PROJ*64);
   int road_cx=SCX+cvoff;
-  /* Enemy screen X: offset from road centre */
   int sx=road_cx+(e->x_fp*hw)/FP;
-  if(sx<-60||sx>SW+60)return;
 
   int sc=(dy*100)/(SH-HOR);
-  int bw=imax(52*sc/100,4);int bh=imax(72*sc/100,4);
-  int bw2=bw/2;
-
+  int bw=imax(60*sc/100,6); /* Slightly bigger */
+  int bh=imax(40*sc/100,4);
+  
   unsigned short bc,rc;
   switch(e->type){
     case 0:bc=C_W;rc=C_W;break;
@@ -459,31 +501,34 @@ static void draw_enemy(const Enm*e){
     case 2:bc=C_C;rc=0x06DFu;break;
     default:bc=C_M;rc=0x7800u;break;
   }
+
   /* Shadow */
-  fillr(sx-bw2-2,sy,bw+4,imax(bh/5,1),C_SHA);
-  /* Bumper */
-  fillr(sx-bw2,sy-bh/4,bw,bh/4,bc);
-  {int ww=imax(bw/5,1);fillr(sx-bw2,sy-bh/4,ww,bh/4,C_K);fillr(sx+bw2-ww,sy-bh/4,ww,bh/4,C_K);}
-  /* Body */
-  fillr(sx-bw2,sy-bh*3/4,bw,bh/2,bc);hline(sx-bw2,sy-bh/2,bw,rc);
-  /* Glass */
-  {int gw=bw*3/4;int gh=imax(bh/7,1);fillr(sx-gw/2,sy-bh*5/8,gw,gh,C_DK);}
-  /* Roof */
-  {int rw=bw*3/4;int rh=imax(bh/5,1);int ry=sy-bh-rh;
-   fillr(sx-rw/2,ry,rw,rh,rc);hline(sx-rw/2,ry,rw,C_MG);}
-  /* Headlights */
-  if(bw>4){
-    fillr(sx-bw2+1,sy-bh/5,imax(bw/5,1),imax(bh/8,1),C_W);
-    fillr(sx+bw2-imax(bw/5,1)-1,sy-bh/5,imax(bw/5,1),imax(bh/8,1),C_W);}
-  /* Police siren */
-  if(e->type==0&&bw>6){
-    int rw2=bw*3/4;int rh2=imax(bh/5,1);int ry2=sy-bh-rh2;
-    int sw2=imax(rw2/2,2);unsigned short sl=(e->anim&8)?C_R:C_B;
-    fillr(sx-sw2/2,ry2-imax(rh2/2,1),sw2/2,imax(rh2/2,1),sl);
-    fillr(sx,ry2-imax(rh2/2,1),sw2/2,imax(rh2/2,1),sl==C_R?C_B:C_R);}
-  /* Taillights */
-  if((e->anim>>3)&1){fillr(sx-bw2,sy-2,imax(bw/6,1),2,C_R);
-    fillr(sx+bw2-imax(bw/6,1),sy-2,imax(bw/6,1),2,C_R);}
+  fillr(sx-bw/2-2, sy, bw+4, imax(bh/6,1), C_SHA);
+
+  /* Stacked Layers for Volume */
+  int layers = imax(12 * sc / 100, 2);
+  for(int i=0; i<layers; i++) {
+    int ly = sy - i;
+    int cur_bw = bw;
+    if(i > layers*2/3) cur_bw = bw*3/4; /* Taper top for roof */
+    
+    fillr(sx-cur_bw/2, ly, cur_bw, 1, (i==layers-1)?rc:bc);
+    
+    /* Windows on upper layers */
+    if(i >= layers/3 && i < layers*2/3) {
+      int gw = cur_bw * 8/10;
+      fillr(sx-gw/2, ly, gw, 1, C_DK);
+    }
+  }
+
+  /* Headlights / Taillights */
+  if(sc > 20) {
+    if((e->anim>>3)&1) {
+      fillr(sx-bw/2, sy-2, imax(bw/5,1), 2, C_R); fillr(sx+bw/2-imax(bw/5,1), sy-2, imax(bw/5,1), 2, C_R);
+    } else {
+      fillr(sx-bw/2, sy-2, imax(bw/5,1), 2, C_Y); fillr(sx+bw/2-imax(bw/5,1), sy-2, imax(bw/5,1), 2, C_Y);
+    }
+  }
 }
 
 /* ================================================================
@@ -505,43 +550,16 @@ static void draw_hud(void){
 /* ================================================================
  * OVERLAYS
  * ================================================================ */
-static void dim_fb(void){
-  int n=STR*SH;
-  for(int i=0;i<n;i++){unsigned short p=fb[i];
-    fb[i]=(unsigned short)(((p>>1)&0x7800u)|((p>>1)&0x03E0u)|((p>>1)&0x000Fu));}
+static void draw_flash(void){
+  if(gm.flash_t > 0 && (gm.fr & 2)) {
+    fillr(0,0,SW,SH,C_R);
+    gm.flash_t--;
+  }
 }
-static void draw_menu(void){
-  clrfb(C_K);
-  for(int y=0;y<SH;y++){unsigned short sky;
-    if(y<80){int b=3+(y>>3);sky=(unsigned short)((y/16<<5)|b);}
-    else if(y<160){int b=13+((y-80)>>4);int g=5+((y-80)>>4);sky=(unsigned short)((g<<5)|b);}
-    else{int r=(y-160)>>3;int g=3+((y-160)>>4);sky=(unsigned short)((r<<11)|(g<<5)|8);}
-    hline(0,y,SW,sky);}
-  draw_sky();draw_rain();
-  for(int b=0;b<12;b++){int bx=b*27;int bh=18+(b*7)%28;
-    fillr(bx,68-bh,22,bh,C_BD3);fillr(bx+2,68-bh-3,4,4,C_BD3);fillr(bx+15,68-bh-3,4,4,C_BD3);}
-  fillr(108,48,22,32,C_DK);fillr(190,48,22,32,C_DK);fillr(128,30,64,52,C_DK);
-  fillr(140,18,12,18,C_DK);fillr(168,18,12,18,C_DK);fillr(148,42,24,22,0x2945u);
-  fillr(148,60,24,5,C_Y);diamond(160,52,7,C_Y);
-  fillr(54,88,212,30,C_Y);fillr(56,90,208,26,C_K);
-  int tx=64;
-  fillr(tx,92,4,22,C_Y);fillr(tx+4,92,8,6,C_Y);fillr(tx+4,100,8,6,C_Y);fillr(tx+4,108,8,7,C_Y);tx+=16;
-  fillr(tx,96,4,18,C_Y);fillr(tx+8,96,4,18,C_Y);fillr(tx+4,92,4,5,C_Y);fillr(tx+4,101,4,4,C_Y);tx+=16;
-  fillr(tx,92,20,6,C_Y);fillr(tx+8,92,4,22,C_Y);tx+=22;
-  fillr(tx,92,4,22,C_Y);fillr(tx+14,92,4,22,C_Y);fillr(tx+4,94,5,7,C_Y);fillr(tx+9,94,5,7,C_Y);tx+=20;
-  fillr(tx,96,4,18,C_Y);fillr(tx+8,96,4,18,C_Y);fillr(tx+4,92,4,5,C_Y);fillr(tx+4,101,4,4,C_Y);tx+=16;
-  fillr(tx,92,4,22,C_Y);fillr(tx+14,92,4,22,C_Y);fillr(tx+4,94,6,5,C_Y);fillr(tx+9,100,6,5,C_Y);
-  fillr(80,122,160,10,C_C);fillr(82,123,156,8,C_K);
-  for(int i=0;i<8;i++)fillr(84+i*18,125,14,4,C_C);
-  unsigned short bc=(gm.fr&32)?C_Y:C_O;
-  fillr(78,160,164,16,bc);fillr(80,162,160,12,C_K);
-  for(int i=0;i<6;i++)fillr(86+i*24,165,20,6,bc);
-  drawnum(138,192,pl.score,C_Y);
-}
-static void draw_pause(void){dim_fb();
+static void draw_pause(void){
   fillr(80,90,160,60,C_DK);bordr(80,90,160,60,C_Y);
   fillr(120,108,12,22,C_Y);fillr(148,108,12,22,C_Y);fillr(100,136,120,7,C_MG);}
-static void draw_gameover(void){dim_fb();
+static void draw_gameover(void){
   fillr(50,70,220,100,C_K);bordr(50,70,220,100,C_R);fillr(70,85,180,7,C_R);
   drawnum(120,103,pl.score,C_Y);if(gm.fr&32)fillr(90,148,140,6,C_W);}
 
@@ -549,14 +567,14 @@ static void draw_gameover(void){dim_fb();
  * SPAWN / INIT
  * ================================================================ */
 static void spawn_enemy(void){
-  int lanes_fp[3]={-170,0,170};
+  int lanes_fp[3]={-340, 0, 340}; /* Wider lanes for wider road */
   for(int i=0;i<NEMAX;i++){
     if(en[i].active)continue;
     en[i].active=true;
-    en[i].x_fp=lanes_fp[irand(0,2)]+irand(-20,20);
-    en[i].wz=SPWNZ+irand(0,60);
-    en[i].spd=1+irand(0,2);
-    en[i].type=irand(0,3);
+    en[i].x_fp=lanes_fp[irand(0,2)]+irand(-40,40);
+    en[i].wz=SPWNZ+irand(0,40);
+    en[i].spd=irand(1,3);
+    en[i].type=irand(0,2);
     en[i].anim=0;
     return;
   }
@@ -565,7 +583,7 @@ static void game_init(void){
   pl.x_fp=0;pl.stv=0;pl.vel=0;pl.hp=PLHP;pl.score=0;
   pl.invuln=0;pl.bst=0;pl.alive=true;pl.boosting=false;
   for(int i=0;i<NEMAX;i++)en[i].active=false;
-  gm.scroll=0;gm.fr=0;gm.curve=0;gm.curve_t=0;gm.spawn_t=SPWNT;
+  gm.scroll=0;gm.fr=0;gm.curve=0;gm.curve_t=0;gm.spawn_t=SPWNT;gm.flash_t=0;
 }
 
 /* ================================================================
@@ -622,7 +640,7 @@ static void update_world(void){
     if(e->wz<=COLLZ&&e->wz>=-5){
       int dx_fp=iabs(e->x_fp-pl.x_fp);
       if(dx_fp<COLLX&&pl.invuln<=0&&pl.alive){
-        pl.hp--;pl.invuln=INVT;pl.vel/=2;
+        pl.hp--;pl.invuln=INVT;pl.vel/=2;gm.flash_t=10;
         if(pl.hp<=0){pl.alive=false;gm.st=ST_OVER;}
         e->active=false;
       }
@@ -644,19 +662,19 @@ static void render_scene(void){
   draw_buildings();
   draw_road();
   draw_lamps();
-  draw_rain();
-  /* Enemies: sort far-to-near, then draw */
-  int idx[NEMAX];int cnt=0;
+  /* Enemies far-to-near */
+  int idx[NEMAX], cnt=0;
   for(int i=0;i<NEMAX;i++)if(en[i].active)idx[cnt++]=i;
   for(int i=0;i<cnt-1;i++)
     for(int j=i+1;j<cnt;j++)
-      if(en[idx[i]].wz<en[idx[j]].wz){int t=idx[i];idx[i]=idx[j];idx[j]=t;}
+      if(en[idx[i]].wz < en[idx[j]].wz){int t=idx[i];idx[i]=idx[j];idx[j]=t;}
   for(int i=0;i<cnt;i++)draw_enemy(&en[idx[i]]);
   draw_batmobile();
   draw_hud();
+  draw_flash();
   if(gm.st==ST_PAUSE)draw_pause();
   if(gm.st==ST_OVER)draw_gameover();
-  blit();
+  wait_vsync();
 }
 
 /* ================================================================
@@ -672,7 +690,7 @@ int main(void){
     switch(gm.st){
       case ST_MENU:
         if(kEnt){game_init();gm.st=ST_PLAY;kEnt=false;}
-        draw_menu();blit();break;
+        clrfb(C_K);draw_sky();draw_buildings();drawnum(130,120,pl.score,C_W);wait_vsync();break;
       case ST_PLAY:
         if(kEsc){gm.st=ST_PAUSE;kEsc=false;}
         else{update_physics();update_world();}
@@ -687,8 +705,3 @@ int main(void){
   }
   return 0;
 }
-/*
- * CPUlator: https://cpulator.01xz.net/?sys=arm-de1soc
- * Paste -> Compile and Load -> Continue -> ENTER
- * W/Up=Accel S/Down=Brake A/Left=Steer D/Right=Steer SHIFT=Boost ESC=Pause
- */
